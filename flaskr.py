@@ -3,6 +3,8 @@ from flaskext.sqlalchemy import SQLAlchemy
 from contextlib import closing
 from flask import Flask, request, session, g, redirect, url_for, \
              abort, render_template, flash
+from werkzeug import generate_password_hash, check_password_hash
+from datetime import datetime
 
 #app
 app = Flask(__name__)
@@ -25,6 +27,27 @@ class Post(db.Model):
     def __repr__(self):
         return '<Title %r>' % self.title
 
+class User(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    email = db.Column(db.String(80))
+    password = db.Column(db.String())
+    activate = db.Column(db.Boolean)
+    created = db.Column(db.DateTime)
+    role = db.Column(db.String(15))
+
+    def __init__(self, email, password, role='User'):
+       self.email = email
+       self.password = generate_password_hash(password)
+       self.activate = True #FIXME
+       self.created = datetime.utcnow()
+       self.role = role
+
+    def check_password(self, password):
+        return check_password_hash(self.password, password)
+
+    def __repr__(self):
+        return '<email %r>' % self.email
+
 #routes
 @app.route('/')
 def show_entries():
@@ -44,9 +67,11 @@ def add_entry():
 def login():
     error = None
     if request.method == 'POST':
-        if request.form['username'] != app.config['USERNAME']:
+        email, pwd = request.form['email'], request.form['password']
+        user = User.query.filter_by(email=email).first()
+        if not user:
             error = 'Invalid username'
-        elif request.form['password'] != app.config['PASSWORD']:
+        elif not user.check_password(pwd):
             error = 'Invalid password'
         else:
             session['logged_in'] = True
