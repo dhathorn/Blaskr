@@ -29,7 +29,7 @@ class Post(db.Model):
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    email = db.Column(db.String(80))
+    email = db.Column(db.String(80), unique=True)
     password = db.Column(db.String())
     activate = db.Column(db.Boolean)
     created = db.Column(db.DateTime)
@@ -84,6 +84,22 @@ def logout():
     session.pop('logged_in', None)
     flash('You were logged out')
     return redirect(url_for('show_entries'))
+
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    error = None
+    if request.method == 'POST':
+        email, pwd, verify = request.form['email'], request.form['password'], request.form['verify']
+        if User.query.filter_by(email=email).first():
+            error = 'email already in use'
+        elif verify != pwd:
+            error = 'passwords do not match'
+        else:
+            db.session.add(User(email, pwd))
+            db.session.commit()
+            flash('Account Created')
+            return redirect(url_for('login'))
+    return render_template('register.html', error=error)
 
 if __name__ == '__main__':
     app.run()
