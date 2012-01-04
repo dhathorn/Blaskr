@@ -1,7 +1,7 @@
 from flaskr import app, db
 from flask import Flask, request, session, g, redirect, url_for, \
              abort, render_template, flash
-from model import *
+from models import *
 from forms import *
 
 #views
@@ -21,19 +21,12 @@ def add_entry():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    error = None
-    if request.method == 'POST':
-        email, pwd = request.form['email'], request.form['password']
-        user = User.query.filter_by(email=email).first()
-        if not user:
-            error = 'Invalid username'
-        elif not user.check_password(pwd):
-            error = 'Invalid password'
-        else:
-            session['logged_in'] = True
-            flash('You were logged in')
-            return redirect(url_for('show_entries'))
-    return render_template('login.html', error=error)
+    form = LoginForm(request.form)
+    if request.method == 'POST' and form.validate():
+        session['logged_in'] = True
+        flash('You were logged in')
+        return redirect(url_for('show_entries'))
+    return render_template('login.html', form=form)
 
 @app.route('/logout')
 def logout():
@@ -45,10 +38,8 @@ def logout():
 def register():
     form = RegistrationForm(request.form)
     if request.method == 'POST' and form.validate():
-        db.session.add(User(form.email.data, form.pwd.data))
+        db.session.add(User(form.email.data, form.password.data))
         db.session.commit()
         flash('Account Created')
         return redirect(url_for('login'))
     return render_template('register.html', form=form)
-
-
