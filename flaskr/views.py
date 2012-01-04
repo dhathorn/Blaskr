@@ -1,8 +1,8 @@
 from flaskr import app, db
-from werkzeug import generate_password_hash, check_password_hash
 from flask import Flask, request, session, g, redirect, url_for, \
              abort, render_template, flash
 from model import *
+from forms import *
 
 #views
 @app.route('/')
@@ -43,18 +43,12 @@ def logout():
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
-    error = None
-    if request.method == 'POST':
-        email, pwd, verify = request.form['email'], request.form['password'], request.form['verify']
-        if User.query.filter_by(email=email).first():
-            error = 'email already in use'
-        elif verify != pwd:
-            error = 'passwords do not match'
-        else:
-            db.session.add(User(email, pwd))
-            db.session.commit()
-            flash('Account Created')
-            return redirect(url_for('login'))
-    return render_template('register.html', error=error)
+    form = RegistrationForm(request.form)
+    if request.method == 'POST' and form.validate():
+        db.session.add(User(form.email.data, form.pwd.data))
+        db.session.commit()
+        flash('Account Created')
+        return redirect(url_for('login'))
+    return render_template('register.html', form=form)
 
 

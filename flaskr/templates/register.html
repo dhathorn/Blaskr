@@ -1,17 +1,13 @@
 {% extends "layout.html" %}
 {% block body %}
   <h2>Registration</h2>
-  {% if error %}<p class=error><strong>Error:</strong> {{ error }}{% endif %}
+	{% from "_formhelpers.html" import render_field %}
   <form action="{{ url_for('register') }}" method=post>
-    <dl>
-      <dt>Username:
-      <dd><input type=text name=email>
-      <dt>Password:
-      <dd><input type=password name=password>
-      <dt>Verify Password:
-      <dd><input type=password name=verify >
-      <dd><input type=submit value=Register>
-    </dl>
+		<dl>
+			{{ render_field(form.email) }}
+			{{ render_field(form.pwd) }}
+			{{ render_field(form.confirm) }}
+		</dl>
+  <dd><input type=submit value=Register>
   </form>
 {% endblock %}
-

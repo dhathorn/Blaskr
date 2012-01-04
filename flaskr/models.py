@@ -1,5 +1,5 @@
-from flaskext.sqlalchemy import SQLAlchemy
 from datetime import datetime
+from werkzeug import generate_password_hash, check_password_hash
 from flaskr import db
 
 #models
