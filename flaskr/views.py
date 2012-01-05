@@ -10,9 +10,19 @@ def show_entries():
     entries = Post.query.order_by(Post.id.desc()).all()
     return render_template('show_entries.html', entries=entries)
 
-@app.route('/add', methods=['POST'])
+@app.route('/post/<int:post_id>')
+def show_post(post_id):
+    post = Post.query.filter(Post.id == post_id).first()
+    return render_template('post.html', post=post)
+
+@app.route('/post/edit/<int:post_id>')
+def edit_post(post_id):
+    post = Post.query.filter(Post.id == post_id).first()
+    raise notimplimentederror()
+
+@app.route('/post/add', methods=['GET', 'POST'])
 def add_entry():
-    if not session.get('logged_in'):
+    if not session.get('email'):
         abort(401)
     db.session.add(Post(request.form['title'], request.form['text']))
     db.session.commit()
@@ -23,14 +33,14 @@ def add_entry():
 def login():
     form = LoginForm(request.form)
     if request.method == 'POST' and form.validate():
-        session['logged_in'] = True
+        session['email'] = form.email.data
         flash('You were logged in')
         return redirect(url_for('show_entries'))
     return render_template('login.html', form=form)
 
 @app.route('/logout')
 def logout():
-    session.pop('logged_in', None)
+    session.clear()
     flash('You were logged out')
     return redirect(url_for('show_entries'))
 
@@ -43,3 +53,16 @@ def register():
         flash('Account Created')
         return redirect(url_for('login'))
     return render_template('register.html', form=form)
+
+@app.route('/edit', methods=['GET', 'POST'])
+def edit():
+    user = User.query.filter(User.email == session['email']).first()
+    if not user:
+        return redirect(url_for('login'))
+
+    form = RegistrationForm(request.form, user)
+    if request.method == 'POST' and form.validate():
+        form.populate_obj(user)
+        db.session.commit()
+        flash('Modification Successful')
+    return render_template('edit.html', form=form)
