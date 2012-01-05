@@ -8,7 +8,7 @@ from forms import *
 @app.route('/')
 def show_entries():
     entries = Post.query.order_by(Post.id.desc()).all()
-    return render_template('show_entries.html', entries=entries)
+    return render_template('show_entries.html', entries=entries, form=PostForm())
 
 @app.route('/post/<int:post_id>')
 def show_post(post_id):
@@ -21,13 +21,16 @@ def edit_post(post_id):
     raise notimplimentederror()
 
 @app.route('/post/add', methods=['GET', 'POST'])
-def add_entry():
+def add_post():
     if not session.get('email'):
         abort(401)
-    db.session.add(Post(request.form['title'], request.form['text']))
-    db.session.commit()
-    flash('New entry was successfully posted')
-    return redirect(url_for('show_entries'))
+    form = PostForm(request.form)
+    if request.method == 'POST' and form.validate():
+        db.session.add(Post(form.title.data, form.text.data))
+        db.session.commit()
+        flash('New entry was successfully posted')
+        return redirect(url_for('show_entries'))
+    return render_template('add_post.html', form=form)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():

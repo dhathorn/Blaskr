@@ -1,4 +1,4 @@
-from wtforms import Form, BooleanField, TextField, PasswordField, validators, ValidationError
+from wtforms import Form, BooleanField, TextField, TextAreaField, PasswordField, validators, ValidationError
 from models import *
 
 class Unique(object):
@@ -10,6 +10,11 @@ class Unique(object):
     def __call__(self, form, field):
         if self.model.query.filter(self.field == field.data).first():
             raise ValidationError(self.message)
+
+
+class PostForm(Form):
+    title = TextField('title', [validators.required()])
+    text = TextAreaField('text')
 
 
 class RegistrationForm(Form):

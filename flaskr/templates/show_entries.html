@@ -1,12 +1,11 @@
 {% extends "layout.html" %}
 {% block body %}
   {% if session.email %}
-    <form action="{{ url_for('add_entry') }}" method=post class=add-entry>
+	{% from "_formhelpers.html" import render_field %}
+		<form action="{{ url_for('add_post') }}" method=post>
       <dl>
-        <dt>Title:
-        <dd><input type=text size=30 name=title>
-        <dt>Text:
-        <dd><textarea name=text rows=5 cols=40></textarea>
+				{{ render_field(form.title) }}
+				{{ render_field(form.text) }}
         <dd><input type=submit value=Share>
       </dl>
     </form>
