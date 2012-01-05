@@ -1,0 +1,11 @@
+{% extends "layout.html" %}
+{% block body %}
+	{% from "_formhelpers.html" import render_field %}
+		<form action="{{ url_for('add_post') }}" method=post>
+      <dl>
+				{{ render_field(form.title) }}
+				{{ render_field(form.text) }}
+        <dd><input type=submit value=Share>
+      </dl>
+    </form>
+{% endblock %}

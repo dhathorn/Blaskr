@@ -7,6 +7,7 @@ class Post(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(80))
     text = db.Column(db.String(180))
+    comments = db.relationship('Comment', backref='post', lazy = 'dynamic')
 
     def __init__(self, title, text):
         self.title = title
@@ -14,6 +15,12 @@ class Post(db.Model):
 
     def __repr__(self):
         return '<Title %r>' % self.title
+
+class Comment(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(80))
+    text = db.Column(db.String(180))
+    post_id = db.Column(db.Integer, db.ForeignKey('post.id'))
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
