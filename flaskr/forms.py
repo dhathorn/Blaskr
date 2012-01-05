@@ -13,23 +13,23 @@ class Unique(object):
 
 
 class PostForm(Form):
-    title = TextField('title', [validators.required()])
-    text = TextAreaField('text')
+    title = TextField("title", [validators.required()])
+    text = TextAreaField("text")
 
 
 class RegistrationForm(Form):
-    email = TextField('email', [validators.Length(min=6, max=35), Unique(User, User.email)])
-    password = PasswordField('password', [
+    email = TextField("email", [validators.Length(min=6, max=35), Unique(User, User.email)])
+    password = PasswordField("password", [
         validators.Required(),
-        validators.EqualTo('confirm', message='Passwords must match')
+        validators.EqualTo("confirm", message="Passwords must match")
     ])
-    confirm = PasswordField('Repeat Password')
+    confirm = PasswordField("Repeat Password")
 
 class LoginForm(Form):
-    email = TextField('email', [validators.Required()])
-    password = PasswordField('password', [validators.Required()])
+    email = TextField("email", [validators.Required()])
+    password = PasswordField("password", [validators.Required()])
 
 
 class AddCommentForm(Form):
-    title = TextField('title', [validators.Required()])
-    text = TextAreaField('text')
+    title = TextField("title", [validators.Required()])
+    text = TextAreaField("text")
