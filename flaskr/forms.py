@@ -28,3 +28,8 @@ class RegistrationForm(Form):
 class LoginForm(Form):
     email = TextField('email', [validators.Required()])
     password = PasswordField('password', [validators.Required()])
+
+
+class AddCommentForm(Form):
+    title = TextField('title', [validators.Required()])
+    text = TextAreaField('text')
