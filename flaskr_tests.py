@@ -47,28 +47,47 @@ class FlaskrTestCase(unittest.TestCase):
         assert "logged out" in rv.data
 
     def test_post(self):
+        rv = self.app.get("/post/1")
+        assert rv.status_code = 404
         rv = self.app.post("/post/add", data=dict(title="test", text="test"))
         assert rv.status_code == 401
+        rv = self.app.put("/post/1", data=dict(title="editing", text="this"))
+        assert rv.status_code = 401
+
         self.register("eggs@yahoo.com", "spammmmm", "spammmmm")
         self.login("eggs@yahoo.com", "spammmmm")
-        rv = self.app.post("/post/add", data=dict(title="test", text="test"))
-        assert "successfully posted" in rv.data
 
-    def edit_post(self):
+        rv = self.app.post("/post/add", data=dict(title="test", text="magic baked in right here"))
+        assert "Successfully posted post" in rv.data
+        rv = self.app.get("/post/1")
+        assert "magic baked in right here" in rv.data
+        rv = self.app.put("/post/1", data=dict(title="test", text="no more magic!"))
+        assert "Successfully edited post" in rv.data
+        rv = self.app.get("/post/1")
+        assert "no more magic" in rv.data
+
+    def test_comment(self):
         self.register("eggs@yahoo.com", "spammmmm", "spammmmm")
         self.login("eggs@yahoo.com", "spammmmm")
-        rv = self.app.post("/post/add", data=dict(title="test", text="test"))
+        rv = self.app.post("/post/add", data=dict(title="post", text="to test comments"))
 
-    def test_add_comment(self):
+        rv = self.app.post("/comment/add", data=dict(title="test", text="magic", post_id=1))
+        assert "Successfully added" in rv.data
+        rv = self.app.post("/comment/add", data=dict(title="test", text="more magic", post_id=1))
+        assert "Successfully edited" in rv.data
+        rv = self.app.post("/comment/add", data=dict(title="test", text="more magic", post_id=2))
+        assert "Cannot change comment parent" in rv.data
+
+        rv = self.app.post("/comment/add", data=dict(title="test", text="anon", post_id=1))
+        assert "successfully added" in rv.data
+        rv = self.app.post("/comment/add", data=dict(title="test", text="anon", post_id=2))
+        assert rv.status_code = 404 
+        rv = self.app.put("/comment/1", data=dict(title="edited", text="anon", post_id=1))
+        assert rv.status_code = 401 
+
         rv = self.app.post("/comment/add", data=dict(title="test", text="test"))
         assert "successfully posted" in rv.data
-        self.register("eggs@yahoo.com", "spammmmm", "spammmmm")
-        self.login("eggs@yahoo.com", "spammmmm")
-        rv = self.app.post("/comment/add", data=dict(title="test", text="test"))
-        assert "successfully posted" in rv.data
-
 
 
 if __name__ == '__main__':
     unittest.main()
-
