@@ -1,0 +1,14 @@
+{% extends "layout.html" %}
+{% block body %}
+  <h2>{{ post.title }}</h2>{{ post.text }}
+	<h3>Say your bit, leave a comment below</h3>
+	{% from "_formhelpers.html" import render_field %}
+	<form action="{{ url_for("add_comment") }}" method=post>
+		<dl>
+			{{ render_field(comment.title) }}
+			{{ render_field(comment.text) }}
+			{{ render_field(comment.post_id) }}
+			<dd><input type=submit value=Comment></dd>
+		</dl>
+	</form>
+{% endblock %}
