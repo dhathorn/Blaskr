@@ -18,7 +18,7 @@ class PostForm(Form):
 
 
 class RegistrationForm(Form):
-    email = TextField("email", [validators.Length(min=6, max=35), Unique(User, User.email)])
+    email = TextField("email", [validators.Length(min=6, max=35), validators.Email(), Unique(User, User.email)])
     password = PasswordField("password", [
         validators.Required(),
         validators.EqualTo("confirm", message="Passwords must match")
