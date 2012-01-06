@@ -11,6 +11,3 @@ app.secret_key ='\xac\r/\xe5\xd9\x94\xd1.\x14\xfd-\xb9I}\xdd;\x9a\x17E\xafM\x11/
 db = SQLAlchemy(app)
 
 import flaskr.views
-
-if __name__ == '__main__':
-    app.run(host='0.0.0.0')
