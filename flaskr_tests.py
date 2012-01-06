@@ -48,11 +48,11 @@ class FlaskrTestCase(unittest.TestCase):
 
     def test_post(self):
         rv = self.app.get("/post/1")
-        assert rv.status_code = 404
+        assert rv.status_code == 404
         rv = self.app.post("/post/add", data=dict(title="test", text="test"))
         assert rv.status_code == 401
-        rv = self.app.put("/post/1", data=dict(title="editing", text="this"))
-        assert rv.status_code = 401
+        rv = self.app.post("/post/1", data=dict(title="editing", text="this"))
+        assert rv.status_code == 401
 
         self.register("eggs@yahoo.com", "spammmmm", "spammmmm")
         self.login("eggs@yahoo.com", "spammmmm")
@@ -61,7 +61,7 @@ class FlaskrTestCase(unittest.TestCase):
         assert "Successfully posted post" in rv.data
         rv = self.app.get("/post/1")
         assert "magic baked in right here" in rv.data
-        rv = self.app.put("/post/1", data=dict(title="test", text="no more magic!"))
+        rv = self.app.post("/post/1", data=dict(title="test", text="no more magic!"))
         assert "Successfully edited post" in rv.data
         rv = self.app.get("/post/1")
         assert "no more magic" in rv.data
@@ -81,9 +81,9 @@ class FlaskrTestCase(unittest.TestCase):
         rv = self.app.post("/comment/add", data=dict(title="test", text="anon", post_id=1))
         assert "successfully added" in rv.data
         rv = self.app.post("/comment/add", data=dict(title="test", text="anon", post_id=2))
-        assert rv.status_code = 404 
-        rv = self.app.put("/comment/1", data=dict(title="edited", text="anon", post_id=1))
-        assert rv.status_code = 401 
+        assert rv.status_code == 404 
+        rv = self.app.post("/comment/1", data=dict(title="edited", text="anon", post_id=1))
+        assert rv.status_code == 401 
 
         rv = self.app.post("/comment/add", data=dict(title="test", text="test"))
         assert "successfully posted" in rv.data
