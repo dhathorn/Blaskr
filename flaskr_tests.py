@@ -67,8 +67,11 @@ class FlaskrTestCase(unittest.TestCase):
         assert "Successfully edited post" in rv.data
         rv = self.app.get("/post/1")
         assert "no more magic" in rv.data
-        rv = self.app.post("/post/1", data=dict(method="DELETE")
+        rv = self.app.post("/post/1", data=dict(method="DELETE"))
         assert "Successfully deleted post" in rv.data
+        rv = self.app.get("/post/1")
+        assert rv.status_code == 404 
+
 
     def test_comment(self):
         self.register("eggs@yahoo.com", "spammmmm", "spammmmm")
@@ -77,20 +80,27 @@ class FlaskrTestCase(unittest.TestCase):
 
         rv = self.app.post("/comment/add", data=dict(title="test", text="magic", post_id=1))
         assert "Successfully added" in rv.data
-        rv = self.app.post("/comment/add", data=dict(title="test", text="more magic", post_id=1))
+        rv = self.app.post("/comment/add", data=dict(title="test", text="magic", post_id=2))
+        assert "Post doesn't exsist" in rv.data
+        rv = self.app.post("/comment/1", data=dict(title="test", text="more magic", post_id=1))
         assert "Successfully edited" in rv.data
-        rv = self.app.post("/comment/add", data=dict(title="test", text="more magic", post_id=2))
+        rv = self.app.post("/comment/1", data=dict(title="test", text="more magic", post_id=2))
         assert "Cannot change comment parent" in rv.data
+        rv = self.app.post("/comment/1", data=dict(method="DELETE"))
+        assert "Successfully deleted" in rv.data 
+        rv = self.app.get("/comment/1")
+        assert rv.status_code == 404
+
+        self.logout
 
         rv = self.app.post("/comment/add", data=dict(title="test", text="anon", post_id=1))
         assert "successfully added" in rv.data
         rv = self.app.post("/comment/add", data=dict(title="test", text="anon", post_id=2))
-        assert rv.status_code == 404 
+        assert "Post doesn't exsist" in rv.data
         rv = self.app.post("/comment/1", data=dict(title="edited", text="anon", post_id=1))
         assert rv.status_code == 401 
-
-        rv = self.app.post("/comment/add", data=dict(title="test", text="test"))
-        assert "successfully posted" in rv.data
+        rv = self.app.post("/comment/1", data=dict(method="DELETE"))
+        assert rv.status_code == 401 
 
 if __name__ == '__main__':
     unittest.main()
