@@ -53,6 +53,8 @@ class FlaskrTestCase(unittest.TestCase):
         assert rv.status_code == 401
         rv = self.app.post("/post/1", data=dict(title="editing", text="this"))
         assert rv.status_code == 401
+        rv = self.app.post("/post/1", data=dict(method="DELETE"))
+        assert rv.status_code == 401
 
         self.register("eggs@yahoo.com", "spammmmm", "spammmmm")
         self.login("eggs@yahoo.com", "spammmmm")
@@ -65,6 +67,8 @@ class FlaskrTestCase(unittest.TestCase):
         assert "Successfully edited post" in rv.data
         rv = self.app.get("/post/1")
         assert "no more magic" in rv.data
+        rv = self.app.post("/post/1", data=dict(method="DELETE")
+        assert "Successfully deleted post" in rv.data
 
     def test_comment(self):
         self.register("eggs@yahoo.com", "spammmmm", "spammmmm")
@@ -87,7 +91,6 @@ class FlaskrTestCase(unittest.TestCase):
 
         rv = self.app.post("/comment/add", data=dict(title="test", text="test"))
         assert "successfully posted" in rv.data
-
 
 if __name__ == '__main__':
     unittest.main()
