@@ -1,4 +1,4 @@
-from wtforms import Form, BooleanField, TextField, TextAreaField, PasswordField, validators, ValidationError
+from wtforms import Form, BooleanField, TextField, TextAreaField, PasswordField, validators, ValidationError, HiddenField
 from models import *
 
 class Unique(object):
@@ -33,3 +33,4 @@ class LoginForm(Form):
 class AddCommentForm(Form):
     title = TextField("title", [validators.Required()])
     text = TextAreaField("text")
+    post_id = HiddenField("post_id", [validators.Required()])

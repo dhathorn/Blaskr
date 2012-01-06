@@ -13,7 +13,7 @@ def show_entries():
 @app.route("/post/<int:post_id>")
 def show_post(post_id):
     post = Post.query.filter(Post.id == post_id).first()
-    return render_template("post.html", post=post)
+    return render_template("show_post.html", post=post, comment=AddCommentForm(post_id=post_id))
 
 @app.route("/post/edit/<int:post_id>")
 def edit_post(post_id):
@@ -70,8 +70,14 @@ def edit():
         flash("Modification Successful")
     return render_template("edit.html", form=form)
 
-@app.route("/comment/add/<int:post_id>", methods=["POST"])
+@app.route("/comment/add", methods=["POST"])
 def add_comment():
-
-
-
+    form = AddCommentForm(request.form)
+    if request.method == "POST" and form.validate():
+        db.session.add(Comment(form.title.data, form.text.data, form.post_id.data))
+        db.session.commit()
+        flash("Comment posted! Woot!")
+        return redirect(url_for("show_post", post_id=form.post_id.data))
+    else:
+        return render_template("show_post.html", post=Post.query.filter(Post.id == form.post_id.data).first(), comment=form)
+    #return render_template("add_comment.html", post=Post.query.filter(Post.id == form.post_id.data).first(), comment=form)
