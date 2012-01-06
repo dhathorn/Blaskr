@@ -53,7 +53,7 @@ def register():
     if request.method == "POST" and form.validate():
         db.session.add(User(form.email.data, form.password.data))
         db.session.commit()
-        flash("Account Created")
+        flash("Account created")
         return redirect(url_for("login"))
     return render_template("register.html", form=form)
 
