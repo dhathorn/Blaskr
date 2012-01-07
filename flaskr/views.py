@@ -1,3 +1,4 @@
+import monkey_patch
 from flaskr import app, db
 from flask import Flask, request, session, g, redirect, url_for, \
              abort, render_template, flash
@@ -5,6 +6,7 @@ from models import *
 from forms import *
 
 #views
+
 @app.route("/")
 def show_entries():
     entries = Post.query.order_by(Post.id.desc()).all()
@@ -73,10 +75,7 @@ def edit():
 @app.route("/comment/add", methods=["POST"])
 def add_comment():
     form = AddCommentForm(request.form)
-    if not Post.query.get(form.post_id):
-        abort(403)
-
-    if request.method == "POST" and form.validate():
+    if request.method == "POST" and form.validate() and Post.query.get_or_403(form.post_id.data):
         db.session.add(Comment(form.title.data, form.text.data, form.post_id.data))
         db.session.commit()
         flash("Successfully added comment! Woot!")
