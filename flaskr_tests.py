@@ -81,11 +81,11 @@ class MyTest(unittest.TestCase):
         rv = self.app.post("/comment/add", data=dict(title="test", text="magic", post_id=1), follow_redirects=True)
         assert "Successfully added" in rv.data
         rv = self.app.post("/comment/add", data=dict(title="test", text="magic", post_id=2), follow_redirects=True)
-        assert rv.status == 403
+        assert rv.status_code == 403
         rv = self.app.post("/comment/1", data=dict(title="test", text="more magic", post_id=1), follow_redirects=True)
         assert "Successfully edited" in rv.data
         rv = self.app.post("/comment/1", data=dict(title="test", text="more magic", post_id=2), follow_redirects=True)
-        assert rv.status == 403
+        assert rv.status_code == 403
         rv = self.app.post("/comment/1", data=dict(method="DELETE"), follow_redirects=True)
         assert "Successfully deleted" in rv.data 
         rv = self.app.get("/comment/1")
@@ -96,7 +96,7 @@ class MyTest(unittest.TestCase):
         rv = self.app.post("/comment/add", data=dict(title="test", text="anon", post_id=1), follow_redirects=True)
         assert "successfully added" in rv.data
         rv = self.app.post("/comment/add", data=dict(title="test", text="anon", post_id=2), follow_redirects=True)
-        assert rv.status == 403
+        assert rv.status_code == 403
         rv = self.app.post("/comment/1", data=dict(title="edited", text="anon", post_id=1), follow_redirects=True)
         assert rv.status_code == 401 
         rv = self.app.post("/comment/1", data=dict(method="DELETE"), follow_redirects=True)
