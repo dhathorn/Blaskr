@@ -76,7 +76,7 @@ def add_comment():
     if request.method == "POST" and form.validate():
         db.session.add(Comment(form.title.data, form.text.data, form.post_id.data))
         db.session.commit()
-        flash("Comment posted! Woot!")
+        flash("Successfully added comment! Woot!")
         return redirect(url_for("show_post", post_id=form.post_id.data))
     else:
         return render_template("show_post.html", post=Post.query.filter(Post.id == form.post_id.data).first(), comment=form)

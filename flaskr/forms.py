@@ -2,7 +2,7 @@ from wtforms import Form, BooleanField, TextField, TextAreaField, PasswordField,
 from models import *
 
 class Unique(object):
-    def __init__(self, model, field, message="must be unique"):
+    def __init__(self, model, field, message="this email has been used before"):
         self.model = model
         self.field = field
         self.message = message
@@ -10,7 +10,6 @@ class Unique(object):
     def __call__(self, form, field):
         if self.model.query.filter(self.field == field.data).first():
             raise ValidationError(self.message)
-
 
 class PostForm(Form):
     title = TextField("title", [validators.required()])

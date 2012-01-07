@@ -7,7 +7,7 @@ from flaskr.models import *
 
 class MyTest(unittest.TestCase):
     def setUp(self):
-        flaskr.app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:////tmp/flaskr_test.db"
+        flaskr.app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///:memory:"
         flaskr.app.config['TESTING'] = True
         flaskr.db.create_all()
         self.app = flaskr.app.test_client()
@@ -24,10 +24,6 @@ class MyTest(unittest.TestCase):
     def logout(self):
         return self.app.get("/logout", follow_redirects=True)
 
-    def test_the_test(self):
-        rv = self.register("eggs@yahoo.com", "thisis", "thisis")
-        assert User.query.first()
-
     def test_empty_db(self):
         rv = self.app.get('/')
         assert "No entries here so far" in rv.data
@@ -40,7 +36,7 @@ class MyTest(unittest.TestCase):
         rv = self.register("eggs@yahoo.com", "spammmmm", "spammmmm")
         assert "Account created" in rv.data
         rv = self.register("eggs@yahoo.com", "spammmmm", "spammmmm")
-        assert "Email must be unique" in rv.data
+        assert "this email has been used before" in rv.data
         rv = self.login("eggo", "s:(")
         assert "We don't recognize that username" in rv.data
         rv = self.login("eggs@yahoo.com", "spam")
