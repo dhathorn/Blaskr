@@ -1,19 +1,19 @@
-import os
 import flaskr
 import unittest
-import tempfile
+from flask import Flask
+from flaskext.testing import TestCase
+from flaskr import db, init_db
+from flaskr.models import *
 
-class FlaskrTestCase(unittest.TestCase):
+class MyTest(unittest.TestCase):
     def setUp(self):
         flaskr.app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:////tmp/flaskr_test.db"
         flaskr.app.config['TESTING'] = True
+        flaskr.db.create_all()
         self.app = flaskr.app.test_client()
-        self.db = flaskr.init_db(flaskr.app)
-        self.db.drop_all()
-        self.db.create_all()
 
     def tearDown(self):
-        self.db.drop_all()
+        flaskr.db.drop_all()
 
     def register(self, un, pw, conf):
         return self.app.post("/register", data=dict(email=un, password=pw, confirm=conf), follow_redirects=True)
@@ -24,6 +24,10 @@ class FlaskrTestCase(unittest.TestCase):
     def logout(self):
         return self.app.get("/logout", follow_redirects=True)
 
+    def test_the_test(self):
+        rv = self.register("eggs@yahoo.com", "thisis", "thisis")
+        assert User.query.first()
+
     def test_empty_db(self):
         rv = self.app.get('/')
         assert "No entries here so far" in rv.data
@@ -31,7 +35,7 @@ class FlaskrTestCase(unittest.TestCase):
     def test_login_logout(self):
         rv = self.register("eggs@yahoo.com", "spammmmm", "cam")
         assert "Passwords must match" in rv.data
-        rv = self.register("eggs", "spammmmm", "spammmmm")
+        rv = self.register("eggggggggggggs", "spammmmm", "spammmmm")
         assert "Not a valid email address" in rv.data
         rv = self.register("eggs@yahoo.com", "spammmmm", "spammmmm")
         assert "Account created" in rv.data
@@ -102,5 +106,5 @@ class FlaskrTestCase(unittest.TestCase):
         rv = self.app.post("/comment/1", data=dict(method="DELETE"), follow_redirects=True)
         assert rv.status_code == 401 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

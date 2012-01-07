@@ -6,7 +6,8 @@ from flaskext.sqlalchemy import SQLAlchemy
 def init_db(app): 
     "This function is exported so we can create databases in test"
     return SQLAlchemy(app)
-#app
+
+#config
 app = Flask(__name__)
 app.config.from_object(__name__)
 app.config.from_envvar('FLASKR_SETTINGS', silent=True)
