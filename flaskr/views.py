@@ -12,12 +12,12 @@ def show_entries():
 
 @app.route("/post/<int:post_id>")
 def show_post(post_id):
-    post = Post.query.filter(Post.id == post_id).first()
+    post = Post.query.get_or_404(post_id)
     return render_template("show_post.html", post=post, comment=AddCommentForm(post_id=post_id))
 
 @app.route("/post/edit/<int:post_id>")
 def edit_post(post_id):
-    post = Post.query.filter(Post.id == post_id).first()
+    post = Post.query.get_or_404(post_id)
     raise notimplimentederror()
 
 @app.route("/post/add", methods=["GET", "POST"])
@@ -73,6 +73,9 @@ def edit():
 @app.route("/comment/add", methods=["POST"])
 def add_comment():
     form = AddCommentForm(request.form)
+    if not Post.query.get(form.post_id):
+        abort(403)
+
     if request.method == "POST" and form.validate():
         db.session.add(Comment(form.title.data, form.text.data, form.post_id.data))
         db.session.commit()
