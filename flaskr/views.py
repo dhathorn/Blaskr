@@ -1,4 +1,5 @@
 import monkey_patch
+from helpers import populate_comment
 from flaskr import app, db
 from flask import Flask, request, session, g, redirect, url_for, \
              abort, render_template, flash
@@ -84,9 +85,18 @@ def add_comment():
     else:
         return render_template("show_post.html", post=Post.query.filter(Post.id == form.post_id.data).first(), comment=form)
 
-@app.route("/comment/<int:comment_id>")
-def show_edit_comment():
-    form = AddCommentForm
-    if request.method == "POST":
-
-
+@app.route("/comment/<int:comment_id>", methods=["GET", "POST"])
+def comment(comment_id):
+    comment = Comment.query.get_or_404(comment_id)
+    form = EditCommentForm(request.form)
+    if request.method == "POST" and form.validate():
+        if form.method.data == "DELETE":
+            db.session.delete(comment)
+            db.session.commit()
+            flash("Successfully deleted comment")
+        else:
+            populate_comment(form, comment)
+            db.session.commit()
+            flash("Successfully edited comment")
+        return redirect(url_for("show_post", post_id = comment.post_id))
+    return render_template("show_comment.html", post=Post.query.get(comment.post_id), comment=form)
