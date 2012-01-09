@@ -28,10 +28,8 @@ class LoginForm(Form):
     email = TextField("email", [validators.Required()])
     password = PasswordField("password", [validators.Required()])
 
-class AddCommentForm(Form):
+class CommentForm(Form):
     title = TextField("title", [validators.Required()])
     text = TextAreaField("text")
-    post_id = HiddenField("post_id", [validators.Required()])
-
-class EditCommentForm(AddCommentForm):
+    post_id = HiddenField("post_id")
     method = HiddenField("method")

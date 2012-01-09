@@ -54,7 +54,7 @@ def show_entries():
 @app.route("/post/<int:post_id>")
 def show_post(post_id):
     post = Post.query.get_or_404(post_id)
-    return render_template("show_post.html", post=post, comment=AddCommentForm(post_id=post_id))
+    return render_template("show_post.html", post=post, comment=CommentForm(post_id=post_id))
 
 @app.route("/post/edit/<int:post_id>")
 def edit_post(post_id):
@@ -76,7 +76,7 @@ def add_post():
 #comments
 @app.route("/comment/add", methods=["POST"])
 def add_comment():
-    form = AddCommentForm(request.form)
+    form = CommentForm(request.form)
     if request.method == "POST" and form.validate() and Post.query.get_or_403(form.post_id.data):
         db.session.add(Comment(form.title.data, form.text.data, form.post_id.data))
         db.session.commit()
@@ -88,16 +88,16 @@ def add_comment():
 @app.route("/comment/<int:comment_id>", methods=["GET", "POST"])
 def comment(comment_id):
     comment = Comment.query.get_or_404(comment_id)
-    form = EditCommentForm(request.form)
-    post = Post.query.get_or_403(form.post_id)
+    form = CommentForm(request.form)
+    post = Post.query.get(comment.post_id)
     if request.method == "POST" and form.validate():
-        if form.method.data == "DELETE":
-            db.session.delete(comment)
-            db.session.commit()
-            flash("Successfully deleted comment")
-        else:
-            populate_comment(form, comment)
-            db.session.commit()
-            flash("Successfully edited comment")
+        populate_comment(form, comment)
+        db.session.commit()
+        flash("Successfully edited comment")
         return redirect(url_for("show_post", post_id = comment.post_id))
+    elif form.method.data == "DELETE":
+        db.session.delete(comment)
+        db.session.commit()
+        flash("Successfully deleted comment")
+        return redirect(url_for("show_post", post_id=post.id))
     return render_template("show_comment.html", post=Post.query.get(comment.post_id), comment=form)
