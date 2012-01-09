@@ -89,6 +89,7 @@ def add_comment():
 def comment(comment_id):
     comment = Comment.query.get_or_404(comment_id)
     form = EditCommentForm(request.form)
+    post = Post.query.get_or_403(form.post_id)
     if request.method == "POST" and form.validate():
         if form.method.data == "DELETE":
             db.session.delete(comment)
