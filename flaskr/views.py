@@ -7,33 +7,6 @@ from forms import *
 
 #views
 
-@app.route("/")
-def show_entries():
-    entries = Post.query.order_by(Post.id.desc()).all()
-    return render_template("show_entries.html", entries=entries, form=PostForm())
-
-@app.route("/post/<int:post_id>")
-def show_post(post_id):
-    post = Post.query.get_or_404(post_id)
-    return render_template("show_post.html", post=post, comment=AddCommentForm(post_id=post_id))
-
-@app.route("/post/edit/<int:post_id>")
-def edit_post(post_id):
-    post = Post.query.get_or_404(post_id)
-    raise notimplimentederror()
-
-@app.route("/post/add", methods=["GET", "POST"])
-def add_post():
-    if not session.get("email"):
-        abort(401)
-    form = PostForm(request.form)
-    if request.method == "POST" and form.validate():
-        db.session.add(Post(form.title.data, form.text.data))
-        db.session.commit()
-        flash("New entry was successfully posted")
-        return redirect(url_for("show_entries"))
-    return render_template("add_post.html", form=form)
-
 @app.route("/login", methods=["GET", "POST"])
 def login():
     form = LoginForm(request.form)
@@ -72,6 +45,34 @@ def edit():
         flash("Modification Successful")
     return render_template("edit.html", form=form)
 
+@app.route("/")
+def show_entries():
+    entries = Post.query.order_by(Post.id.desc()).all()
+    return render_template("show_entries.html", entries=entries, form=PostForm())
+
+@app.route("/post/<int:post_id>")
+def show_post(post_id):
+    post = Post.query.get_or_404(post_id)
+    return render_template("show_post.html", post=post, comment=AddCommentForm(post_id=post_id))
+
+@app.route("/post/edit/<int:post_id>")
+def edit_post(post_id):
+    post = Post.query.get_or_404(post_id)
+    raise notimplimentederror()
+
+@app.route("/post/add", methods=["GET", "POST"])
+def add_post():
+    if not session.get("email"):
+        abort(401)
+    form = PostForm(request.form)
+    if request.method == "POST" and form.validate():
+        db.session.add(Post(form.title.data, form.text.data))
+        db.session.commit()
+        flash("New entry was successfully posted")
+        return redirect(url_for("show_entries"))
+    return render_template("add_post.html", form=form)
+
+#comments
 @app.route("/comment/add", methods=["POST"])
 def add_comment():
     form = AddCommentForm(request.form)
@@ -82,4 +83,10 @@ def add_comment():
         return redirect(url_for("show_post", post_id=form.post_id.data))
     else:
         return render_template("show_post.html", post=Post.query.filter(Post.id == form.post_id.data).first(), comment=form)
-    #return render_template("add_comment.html", post=Post.query.filter(Post.id == form.post_id.data).first(), comment=form)
+
+@app.route("/comment/<int:comment_id>")
+def show_edit_comment():
+    form = AddCommentForm
+    if request.method == "POST":
+
+

@@ -33,3 +33,4 @@ class AddCommentForm(Form):
     title = TextField("title", [validators.Required()])
     text = TextAreaField("text")
     post_id = HiddenField("post_id", [validators.Required()])
+    method = HiddenField("method")
