@@ -61,12 +61,14 @@ def show_entries():
 def show_post(post_id):
     post = Post.query.get_or_404(post_id)
     form = PostForm(request.form)
-    if request.method == "POST": 
-        if form.validate() and current_user.is_authenticated():
+    if request.method == "POST":
+        if not current_user.is_authenticated():
+            return login_manager.unauthorized()
+        if form.validate():
             populate_titletext(form, post)
             db.session.commit()
             flash("Successfully edited post")
-        if form.method.data == "DELETE":
+        elif form.method.data == "DELETE":
             db.session.delete(post)
             db.session.commit()
             flash("Successfully deleted post")
@@ -99,8 +101,7 @@ def add_comment():
         db.session.commit()
         flash("Successfully added comment! Woot!")
         return redirect(url_for("show_post", post_id=form.post_id.data))
-    else:
-        return render_template("show_post.html", post=Post.query.filter(Post.id == form.post_id.data).first(), comment=form)
+    return render_template("show_post.html", post=Post.query.filter(Post.id == form.post_id.data).first(), comment=form)
 
 @app.route("/comment/<int:comment_id>", methods=["GET", "POST"])
 @login_required
