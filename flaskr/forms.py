@@ -36,9 +36,7 @@ class CheckPassword(object):
 class PostForm(Form):
     title = TextField("title", [validators.required()])
     text = TextAreaField("text")
-
-class EditPostForm(PostForm):
-    post_id = HiddenField("post_id", [validators.required()]) 
+    method = HiddenField("method")
 
 class RegistrationForm(Form):
     email = TextField("email", [validators.Length(min=6, max=35), validators.Email(message="Not a valid email address"), Unique(User, User.email)])

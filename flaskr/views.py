@@ -60,11 +60,17 @@ def show_entries():
 @app.route("/post/<int:post_id>", methods=["GET", "POST"])
 def show_post(post_id):
     post = Post.query.get_or_404(post_id)
-    form = EditPostForm(request.form)
-    if request.method == "POST" and form.validate() and current_user.is_authenticated():
-        populate_titletext(form, post)
-        db.session.commit()
-        flash("post successfully edited")
+    form = PostForm(request.form)
+    if request.method == "POST": 
+        if form.validate() and current_user.is_authenticated():
+            populate_titletext(form, post)
+            db.session.commit()
+            flash("Successfully edited post")
+        if form.method.data == "DELETE":
+            db.session.delete(post)
+            db.session.commit()
+            flash("Successfully deleted post")
+            return redirect(url_for("show_entries"))
     return render_template("show_post.html", post=post, comment=CommentForm(postid=post_id))
 
 @app.route("/post/edit/<int:post_id>")
