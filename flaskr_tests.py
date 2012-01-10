@@ -36,11 +36,11 @@ class MyTest(unittest.TestCase):
         rv = self.register("eggs@yahoo.com", "spammmmm", "spammmmm")
         assert "Account created" in rv.data
         rv = self.register("eggs@yahoo.com", "spammmmm", "spammmmm")
-        assert "this email has been used before" in rv.data
+        assert "This email has been used before" in rv.data
         rv = self.login("eggo", "s:(")
-        assert "We don't recognize that username" in rv.data
+        assert "We do not recognize that email" in rv.data
         rv = self.login("eggs@yahoo.com", "spam")
-        assert "Incorrect password" in rv.data
+        assert "That password does not match the one we have on record" in rv.data
         rv = self.login("eggs@yahoo.com", "spammmmm")
         assert "logged in" in rv.data
         rv = self.logout()

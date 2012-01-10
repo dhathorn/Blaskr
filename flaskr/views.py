@@ -1,10 +1,11 @@
 import monkey_patch
 from helpers import populate_comment
-from flaskr import app, db
+from flaskr import app, db, login_manager
 from flask import Flask, request, session, g, redirect, url_for, \
              abort, render_template, flash
 from models import *
 from forms import *
+from flaskext.login import current_user, login_user
 
 #views
 
@@ -12,8 +13,8 @@ from forms import *
 def login():
     form = LoginForm(request.form)
     if request.method == "POST" and form.validate():
-        session["email"] = form.email.data
         flash("You were logged in")
+        login_user(User.query.filter(User.email == form.email.data).first()) 
         return redirect(url_for("show_entries"))
     return render_template("login.html", form=form)
 
@@ -90,14 +91,20 @@ def comment(comment_id):
     comment = Comment.query.get_or_404(comment_id)
     form = CommentForm(request.form)
     post = Post.query.get(comment.post_id)
-    if request.method == "POST" and form.validate():
-        populate_comment(form, comment)
-        db.session.commit()
-        flash("Successfully edited comment")
-        return redirect(url_for("show_post", post_id = comment.post_id))
-    elif form.method.data == "DELETE":
-        db.session.delete(comment)
-        db.session.commit()
-        flash("Successfully deleted comment")
-        return redirect(url_for("show_post", post_id=post.id))
+    if request.method == "POST":
+        if form.validate():
+            populate_comment(form, comment)
+            db.session.commit()
+            flash("Successfully edited comment")
+            return redirect(url_for("show_post", post_id = comment.post_id))
+        elif form.method.data == "DELETE":
+            db.session.delete(comment)
+            db.session.commit()
+            flash("Successfully deleted comment")
+            return redirect(url_for("show_post", post_id=post.id))
     return render_template("show_comment.html", post=Post.query.get(comment.post_id), comment=form)
+
+#login
+@login_manager.user_loader
+def load_user(userid):
+    User.query.get(userid)

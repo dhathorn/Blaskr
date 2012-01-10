@@ -1,6 +1,7 @@
 from datetime import datetime
 from werkzeug import generate_password_hash, check_password_hash
 from flaskr import db
+from flaskext.login import UserMixin
 
 #models
 class Post(db.Model):
@@ -27,7 +28,7 @@ class Comment(db.Model):
         self.text = text
         self.post_id = post_id
 
-class User(db.Model):
+class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(80), unique=True)
     password = db.Column(db.String())
