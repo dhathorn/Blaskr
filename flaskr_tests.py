@@ -1,7 +1,6 @@
 import flaskr
 import unittest
 from flask import Flask
-from flaskext.testing import TestCase
 from flaskr import db, init_db
 from flaskr.models import *
 
@@ -91,16 +90,16 @@ class MyTest(unittest.TestCase):
         rv = self.app.get("/comment/1")
         assert rv.status_code == 404
 
-        self.logout
+        self.logout()
 
         rv = self.app.post("/comment/add", data=dict(title="test", text="anon", post_id=1), follow_redirects=True)
         assert "Successfully added" in rv.data
         rv = self.app.post("/comment/add", data=dict(title="test", text="anon", post_id=2), follow_redirects=True)
         assert rv.status_code == 403
         rv = self.app.post("/comment/1", data=dict(title="edited", text="anon", post_id=1), follow_redirects=True)
-        assert rv.status_code == 401 
+        assert (rv.status_code == 401) or ("Please log in" in rv.data)
         rv = self.app.post("/comment/1", data=dict(method="DELETE"), follow_redirects=True)
-        assert rv.status_code == 401 
+        assert (rv.status_code == 401) or ("Please log in" in rv.data)
 
 if __name__ == "__main__":
     unittest.main()

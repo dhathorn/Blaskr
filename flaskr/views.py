@@ -91,11 +91,12 @@ def add_comment():
         return render_template("show_post.html", post=Post.query.filter(Post.id == form.post_id.data).first(), comment=form)
 
 @app.route("/comment/<int:comment_id>", methods=["GET", "POST"])
+@login_required
 def comment(comment_id):
     comment = Comment.query.get_or_404(comment_id)
     form = CommentForm(request.form)
     post = Post.query.get(comment.post_id)
-    if request.method == "POST":
+    if request.method == "POST" and current_user.is_authenticated():
         if form.validate():
             populate_comment(form, comment)
             db.session.commit()
