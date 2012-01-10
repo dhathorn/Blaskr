@@ -51,9 +51,9 @@ class MyTest(unittest.TestCase):
         rv = self.app.post("/post/add", data=dict(title="test", text="test"), follow_redirects=True)
         assert (rv.status_code == 401) or ("Please log in" in rv.data)
         rv = self.app.post("/post/1", data=dict(title="editing", text="this"), follow_redirects=True)
-        assert (rv.status_code == 401) or ("Please log in" in rv.data)
+        assert rv.status_code == 404
         rv = self.app.post("/post/1", data=dict(method="DELETE"), follow_redirects=True)
-        assert (rv.status_code == 401) or ("Please log in" in rv.data)
+        assert rv.status_code == 404
 
         self.register("eggs@yahoo.com", "spammmmm", "spammmmm")
         self.login("eggs@yahoo.com", "spammmmm")
@@ -70,7 +70,6 @@ class MyTest(unittest.TestCase):
         assert "Successfully deleted post" in rv.data
         rv = self.app.get("/post/1")
         assert rv.status_code == 404 
-
 
     def test_comment(self):
         self.register("eggs@yahoo.com", "spammmmm", "spammmmm")

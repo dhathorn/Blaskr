@@ -1,5 +1,5 @@
 import monkey_patch
-from helpers import populate_comment
+from helpers import populate_titletext
 from flaskr import app, db, login_manager
 from flask import Flask, request, session, g, redirect, url_for, \
              abort, render_template, flash, current_app
@@ -57,10 +57,15 @@ def show_entries():
     entries = Post.query.order_by(Post.id.desc()).all()
     return render_template("show_entries.html", entries=entries, form=PostForm())
 
-@app.route("/post/<int:post_id>")
+@app.route("/post/<int:post_id>", methods=["GET", "POST"])
 def show_post(post_id):
     post = Post.query.get_or_404(post_id)
-    return render_template("show_post.html", post=post, comment=CommentForm(post_id=post_id))
+    form = EditPostForm(request.form)
+    if request.method == "POST" and form.validate() and current_user.is_authenticated():
+        populate_titletext(form, post)
+        db.session.commit()
+        flash("post successfully edited")
+    return render_template("show_post.html", post=post, comment=CommentForm(postid=post_id))
 
 @app.route("/post/edit/<int:post_id>")
 @login_required
@@ -99,7 +104,7 @@ def comment(comment_id):
     post = Post.query.get(comment.post_id)
     if request.method == "POST" and current_user.is_authenticated():
         if form.validate():
-            populate_comment(form, comment)
+            populate_titletext(form, comment)
             db.session.commit()
             flash("Successfully edited comment")
             return redirect(url_for("show_post", post_id = comment.post_id))
