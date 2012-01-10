@@ -59,7 +59,7 @@ class MyTest(unittest.TestCase):
         self.login("eggs@yahoo.com", "spammmmm")
 
         rv = self.app.post("/post/add", data=dict(title="test", text="magic baked in right here"), follow_redirects=True)
-        assert "Successfully posted post" in rv.data
+        assert "New entry was successfully posted" in rv.data
         rv = self.app.get("/post/1")
         assert "magic baked in right here" in rv.data
         rv = self.app.post("/post/1", data=dict(title="test", text="no more magic!"), follow_redirects=True)
