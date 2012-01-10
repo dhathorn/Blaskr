@@ -101,7 +101,7 @@ class MyTest(unittest.TestCase):
 
         rv = self.app.post("/comment/add", data=dict(title="test", text="anon", post_id=1), follow_redirects=True)
         assert "Successfully added" in rv.data
-        rv = self.app.get("/comment/1")
+        rv = self.app.get("/comment/1", follow_redirects=True)
         assert "anon" in rv.data
         rv = self.app.post("/comment/add", data=dict(title="test", text="anon", post_id=2), follow_redirects=True)
         assert rv.status_code == 403

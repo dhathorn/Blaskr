@@ -73,6 +73,7 @@ def show_post(post_id):
             db.session.commit()
             flash("Successfully deleted post")
             return redirect(url_for("show_entries"))
+        #needs an edit post template
     return render_template("show_post.html", post=post, comment=CommentForm(postid=post_id))
 
 @app.route("/post/edit/<int:post_id>")
@@ -104,12 +105,13 @@ def add_comment():
     return render_template("show_post.html", post=Post.query.filter(Post.id == form.post_id.data).first(), comment=form)
 
 @app.route("/comment/<int:comment_id>", methods=["GET", "POST"])
-@login_required
 def comment(comment_id):
     comment = Comment.query.get_or_404(comment_id)
     form = CommentForm(request.form)
     post = Post.query.get(comment.post_id)
-    if request.method == "POST" and current_user.is_authenticated():
+    if request.method == "POST":
+        if not current_user.is_authenticated():
+            return login_manager.unauthorized()
         if form.validate():
             populate_titletext(form, comment)
             db.session.commit()
@@ -120,7 +122,8 @@ def comment(comment_id):
             db.session.commit()
             flash("Successfully deleted comment")
             return redirect(url_for("show_post", post_id=post.id))
-    return render_template("show_comment.html", post=Post.query.get(comment.post_id), comment=form)
+        #needs an edit comment form
+    return render_template("show_comment.html", post=Post.query.get(comment.post_id), comment=comment)
 
 #login
 @login_manager.user_loader
