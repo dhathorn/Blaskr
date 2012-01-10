@@ -1,14 +1,14 @@
 {% extends "layout.html" %}
 {% block body %}
-  {% if session.email %}
-	{% from "_formhelpers.html" import render_field %}
-		<form action="{{ url_for('add_post') }}" method=post>
-      <dl>
-				{{ render_field(form.title) }}
-				{{ render_field(form.text) }}
-        <dd><input type=submit value=Share>
-      </dl>
-    </form>
+  {% if current_user.is_authenticated() %}
+		{% from "_formhelpers.html" import render_field %}
+			<form action="{{ url_for('add_post') }}" method=post>
+				<dl>
+					{{ render_field(form.title) }}
+					{{ render_field(form.text) }}
+					<dd><input type=submit value=Share>
+				</dl>
+			</form>
   {% endif %}
   <ul class=entries>
   {% for entry in entries %}

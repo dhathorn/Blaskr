@@ -2,10 +2,10 @@ import monkey_patch
 from helpers import populate_comment
 from flaskr import app, db, login_manager
 from flask import Flask, request, session, g, redirect, url_for, \
-             abort, render_template, flash
+             abort, render_template, flash, current_app
 from models import *
 from forms import *
-from flaskext.login import current_user, login_user
+from flaskext.login import current_user, login_user, login_required, logout_user
 
 #views
 
@@ -13,14 +13,18 @@ from flaskext.login import current_user, login_user
 def login():
     form = LoginForm(request.form)
     if request.method == "POST" and form.validate():
+        user = User.query.first()
+        login_user(user)
+        app.logger.debug(current_user)
         flash("You were logged in")
-        login_user(User.query.filter(User.email == form.email.data).first()) 
         return redirect(url_for("show_entries"))
     return render_template("login.html", form=form)
 
 @app.route("/logout")
+@login_required
 def logout():
-    session.clear()
+    app.logger.debug("waaaaaah logout, %s", current_user)
+    logout_user()
     flash("You were logged out")
     return redirect(url_for("show_entries"))
 
@@ -49,6 +53,7 @@ def edit():
 
 @app.route("/")
 def show_entries():
+    app.logger.debug("am i logged in ? %s", current_user)
     entries = Post.query.order_by(Post.id.desc()).all()
     return render_template("show_entries.html", entries=entries, form=PostForm())
 
@@ -63,9 +68,8 @@ def edit_post(post_id):
     raise notimplimentederror()
 
 @app.route("/post/add", methods=["GET", "POST"])
+@login_required
 def add_post():
-    if not session.get("email"):
-        abort(401)
     form = PostForm(request.form)
     if request.method == "POST" and form.validate():
         db.session.add(Post(form.title.data, form.text.data))
@@ -107,4 +111,4 @@ def comment(comment_id):
 #login
 @login_manager.user_loader
 def load_user(userid):
-    User.query.get(userid)
+    return User.query.get(userid)
