@@ -1,3 +1,4 @@
+#!/usr/bin/python
 import blaskr
 import unittest
 from flask import Flask
