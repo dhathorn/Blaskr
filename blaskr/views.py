@@ -87,7 +87,7 @@ def edit_post(post_id):
 def add_post():
     form = PostForm(request.form)
     if request.method == "POST" and form.validate():
-        db.session.add(Post(form.title.data, form.text.data))
+        db.session.add(Post(form.title.data, form.text.data, ))
         db.session.commit()
         flash("New entry was successfully posted")
         return redirect(url_for("show_entries"))

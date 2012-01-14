@@ -8,10 +8,13 @@ class Post(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(80))
     text = db.Column(db.String(180))
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
+    user = db.relationship("User", backref=db.backref("posts", lazy = "dynamic"))
 
-    def __init__(self, title, text):
+    def __init__(self, title, text, user_id)
         self.title = title
         self.text = text
+        self.user_id = user_id
 
     def __repr__(self):
         return "<Title %r>" % self.title
@@ -21,12 +24,15 @@ class Comment(db.Model):
     title = db.Column(db.String(80))
     text = db.Column(db.String(180))
     post_id = db.Column(db.Integer, db.ForeignKey("post.id"))
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
     post = db.relationship("Post", backref=db.backref("comments", lazy = "dynamic"))
+    user = db.relationship("User", backref=db.backref("comments", lazy = "dynamic"))
 
-    def __init__(self, title, text, post_id):
+    def __init__(self, title, text, post_id, user_id):
         self.title = title
         self.text = text
         self.post_id = post_id
+        self.user_id = user_id
 
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)

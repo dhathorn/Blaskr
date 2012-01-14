@@ -111,5 +111,19 @@ class MyTest(unittest.TestCase):
         rv = self.app.post("/comment/1", data=dict(method="DELETE"), follow_redirects=True)
         assert (rv.status_code == 401) or ("Please log in" in rv.data)
 
+    def post_comment_owner(self):
+        self.register("eggs@yahoo.com", "spammmmm", "spammmmm")
+        self.login("eggs@yahoo.com", "spammmmm")
+        rv = self.app.post("/post/add", data=dict(title="test", text="magic baked in right here"), follow_redirects=True)
+        assert "by eggs@yahoo.com" in rv.data
+        rv = self.app.post("/comment/add", data=dict(title="test", text="magic", post_id=1), follow_redirects=True)
+        assert "by eggs@yahoo.com" in rv.data
+
+        self.logout()
+
+        rv = self.app.post("/comment/add", data=dict(title="test", text="magic", post_id=1), follow_redirects=True)
+        assert "by Anonymous" in rv.data
+
+
 if __name__ == "__main__":
     unittest.main()
