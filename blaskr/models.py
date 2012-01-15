@@ -2,6 +2,7 @@ from datetime import datetime
 from werkzeug import generate_password_hash, check_password_hash
 from blaskr import db
 from flaskext.login import UserMixin
+from flask import session
 
 #models
 class Post(db.Model):
@@ -11,7 +12,7 @@ class Post(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
     user = db.relationship("User", backref=db.backref("posts", lazy = "dynamic"))
 
-    def __init__(self, title, text, user_id)
+    def __init__(self, title, text, user_id):
         self.title = title
         self.text = text
         self.user_id = user_id
@@ -28,7 +29,7 @@ class Comment(db.Model):
     post = db.relationship("Post", backref=db.backref("comments", lazy = "dynamic"))
     user = db.relationship("User", backref=db.backref("comments", lazy = "dynamic"))
 
-    def __init__(self, title, text, post_id, user_id):
+    def __init__(self, title, text, post_id, user_id=0):
         self.title = title
         self.text = text
         self.post_id = post_id
