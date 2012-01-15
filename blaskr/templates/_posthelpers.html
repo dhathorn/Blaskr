@@ -1,0 +1,4 @@
+{% macro render_post(post) %}
+	<h2>{{ post.title }} by {{ post.owner_string() }} </h2>{{ post.text }}<br>
+{% endmacro %}
+

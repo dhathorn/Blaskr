@@ -1,6 +1,7 @@
 {% extends "layout.html" %}
 {% block body %}
 	<p> comment on:
-  <h2>{{ post.title }}</h2>{{ post.text }}
-	<strong>{{ comment.title }}<br>{{ comment.text }}</strong>
+	{% from "_posthelpers.html" import render_post %}
+	{{ render_post(post) }}
+	<strong>{{ comment.title }} by {{ comment.owner_string }}<br>{{ comment.text }}</strong>
 {% endblock %}

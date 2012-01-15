@@ -11,8 +11,9 @@
 			</form>
   {% endif %}
   <ul class=entries>
+	{% from "_posthelpers.html" import render_post %}
   {% for entry in entries %}
-    <li><h2>{{ entry.title }}</h2>{{ entry.text|safe }}
+		{{ render_post(entry) }}
   {% else %}
     <li><em>No entries here so far</em>
   {% endfor %}

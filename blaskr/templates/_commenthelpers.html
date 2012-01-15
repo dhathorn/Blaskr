@@ -1,0 +1,3 @@
+{% macro render_comment(comment) %}
+	<h3>{{ comment.title }} by {{ comment.owner_string() }} <br>{{ comment.text }}<br>
+{% endmacro %}

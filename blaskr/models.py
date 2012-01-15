@@ -20,6 +20,10 @@ class Post(db.Model):
     def __repr__(self):
         return "<Title %r>" % self.title
 
+    def owner_string(self):
+        return User.query.get(self.user_id).email
+
+
 class Comment(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(80))
@@ -34,6 +38,9 @@ class Comment(db.Model):
         self.text = text
         self.post_id = post_id
         self.user_id = user_id
+
+    def owner_string(self):
+        return self.user_id and User.query.get(self.user_id).email or "Anonymous"
 
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)

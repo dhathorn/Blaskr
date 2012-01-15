@@ -74,7 +74,7 @@ def show_post(post_id):
             flash("Successfully deleted post")
             return redirect(url_for("show_entries"))
         #needs an edit post template
-    return render_template("show_post.html", post=post, comment=CommentForm(postid=post_id))
+    return render_template("show_post.html", post=post, comment=CommentForm(postid=post_id), comments=post.comments.all())
 
 @app.route("/post/edit/<int:post_id>")
 @login_required
@@ -98,7 +98,7 @@ def add_post():
 def add_comment():
     form = CommentForm(request.form)
     if request.method == "POST" and form.validate() and Post.query.get_or_403(form.post_id.data):
-        db.session.add(Comment(form.title.data, form.text.data, form.post_id.data))
+        db.session.add(Comment(form.title.data, form.text.data, form.post_id.data, session.get("user_id")))
         db.session.commit()
         flash("Successfully added comment! Woot!")
         return redirect(url_for("show_post", post_id=form.post_id.data))
