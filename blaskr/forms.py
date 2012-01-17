@@ -1,4 +1,4 @@
-from wtforms import Form, BooleanField, TextField, TextAreaField, PasswordField, validators, ValidationError, HiddenField
+from flaskext.wtf import Form, BooleanField, TextField, TextAreaField, PasswordField, validators, ValidationError, HiddenField
 from models import *
 
 class Unique(object):

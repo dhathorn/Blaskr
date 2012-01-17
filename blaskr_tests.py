@@ -8,9 +8,9 @@ from blaskr.models import *
 class MyTest(unittest.TestCase):
     def setUp(self):
         blaskr.app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///:memory:"
-  #      blaskr.app.config['TESTING'] = True
+        blaskr.app.config['TESTING'] = True
         blaskr.app.config['DEBUG'] = False
-        blaskr.app.config['CSRF_ENABLED'] = True
+        blaskr.app.config['CSRF_ENABLED'] = False
         blaskr.db.create_all()
         self.app = blaskr.app.test_client()
 
