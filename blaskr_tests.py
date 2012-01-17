@@ -2,13 +2,15 @@
 import blaskr
 import unittest
 from flask import Flask
-from blaskr import db, init_db
+from blaskr import init_db
 from blaskr.models import *
 
 class MyTest(unittest.TestCase):
     def setUp(self):
         blaskr.app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///:memory:"
-        blaskr.app.config['TESTING'] = True
+  #      blaskr.app.config['TESTING'] = True
+        blaskr.app.config['DEBUG'] = False
+        blaskr.app.config['CSRF_ENABLED'] = True
         blaskr.db.create_all()
         self.app = blaskr.app.test_client()
 
@@ -18,8 +20,14 @@ class MyTest(unittest.TestCase):
     def register(self, un, pw, conf):
         return self.app.post("/register", data=dict(email=un, password=pw, confirm=conf), follow_redirects=True)
 
+    def change_role(self, user_id, role):
+        user = User.query.get(user_id)
+        user.role = role
+        db.session.commit()
+
     def login(self, un, pw):
         return self.app.post("/login", data=dict(email=un, password=pw), follow_redirects=True)
+
 
     def logout(self):
         return self.app.get("/logout", follow_redirects=True)
@@ -29,6 +37,9 @@ class MyTest(unittest.TestCase):
         assert "No entries here so far" in rv.data
 
     def test_login_logout(self):
+        #rv = self.app.get("/register")
+        #print rv.data
+        #assert rv.status_code == 200
         rv = self.register("eggs@yahoo.com", "spammmmm", "cam")
         assert "Passwords must match" in rv.data
         rv = self.register("eggggggggggggs", "spammmmm", "spammmmm")
@@ -58,6 +69,7 @@ class MyTest(unittest.TestCase):
 
         self.register("eggs@yahoo.com", "spammmmm", "spammmmm")
         self.login("eggs@yahoo.com", "spammmmm")
+        self.change_role(1, "User")
 
         rv = self.app.post("/post/add", data=dict(title="test", text="magic baked in right here"), follow_redirects=True)
         assert "New entry was successfully posted" in rv.data
@@ -114,6 +126,7 @@ class MyTest(unittest.TestCase):
     def test_post_comment_owner(self):
         self.register("eggs@yahoo.com", "spammmmm", "spammmmm")
         self.login("eggs@yahoo.com", "spammmmm")
+        self.change_role(1, "User")
         rv = self.app.post("/post/add", data=dict(title="test", text="magic baked in right here"), follow_redirects=True)
         assert "by eggs@yahoo.com" in rv.data
         rv = self.app.post("/comment/add", data=dict(title="test", text="magic", post_id=1), follow_redirects=True)
@@ -123,7 +136,31 @@ class MyTest(unittest.TestCase):
 
         rv = self.app.post("/comment/add", data=dict(title="test", text="magic", post_id=1), follow_redirects=True)
         assert "by Anonymous" in rv.data
+        
+    def test_authorization(self):
+        self.register("eggs@yahoo.com", "spammmmm", "spammmmm")
+        self.login("eggs@yahoo.com", "spammmmm")
+        self.change_role(1, "User")
+        rv = self.app.post("/post/add", data=dict(title="post", text="to test comments"), follow_redirects=True)
+        rv = self.app.post("/comment/add", data=dict(title="new", text="comment", post_id=1), follow_redirects=True)
+        self.logout()
+        self.register("more_eggs@yahoo.com", "spammmmm", "spammmmm")
+        self.login("more_eggs@yahoo.com", "spammmmm")
 
+        rv = self.app.post("/comment/1", data=dict(title="edited", text="anon", post_id=1), follow_redirects=True)
+        assert (rv.status_code == 401) or ("Not authorized" in rv.data)
+        rv = self.app.post("/comment/1", data=dict(method="DELETE"), follow_redirects=True)
+        assert (rv.status_code == 401) or ("Not authorized" in rv.data)
+
+    def test_captcha(self):
+        pass
+
+    def test_pagination(self):
+        pass
+
+    def test_edit_count(self):
+        pass
+    #make sure to put the csrf in
 
 if __name__ == "__main__":
     unittest.main()
