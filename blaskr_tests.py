@@ -38,9 +38,8 @@ class MyTest(unittest.TestCase):
         assert "No entries here so far" in rv.data
 
     def test_login_logout(self):
-        #rv = self.app.get("/register")
-        #print rv.data
-        #assert rv.status_code == 200
+        rv = self.app.get("/register")
+        assert rv.status_code == 200
         rv = self.register("eggs@yahoo.com", "spammmmm", "cam")
         assert "Passwords must match" in rv.data
         rv = self.register("eggggggggggggs", "spammmmm", "spammmmm")
