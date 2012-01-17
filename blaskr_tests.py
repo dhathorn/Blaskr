@@ -18,7 +18,8 @@ class MyTest(unittest.TestCase):
         blaskr.db.drop_all()
 
     def register(self, un, pw, conf):
-        return self.app.post("/register", data=dict(email=un, password=pw, confirm=conf), follow_redirects=True)
+        return self.app.post("/register", data=dict(email=un, password=pw, confirm=conf, recaptcha_challenge_field='test',
+                                                                               recaptcha_response_field= 'test'), follow_redirects=True)
 
     def change_role(self, user_id, role):
         user = User.query.get(user_id)

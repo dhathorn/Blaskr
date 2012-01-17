@@ -1,4 +1,4 @@
-from flaskext.wtf import Form, BooleanField, TextField, TextAreaField, PasswordField, validators, ValidationError, HiddenField
+from flaskext.wtf import Form, BooleanField, TextField, TextAreaField, PasswordField, validators, ValidationError, HiddenField, RecaptchaField
 from models import *
 
 class Unique(object):
@@ -45,6 +45,7 @@ class RegistrationForm(Form):
         validators.EqualTo("confirm", message="Passwords must match")
     ])
     confirm = PasswordField("Repeat Password")
+    recaptcha = RecaptchaField()
 
 class LoginForm(Form):
     email = TextField("email", [validators.Required(), Exists(User, User.email, message="We do not recognize that email address")])
