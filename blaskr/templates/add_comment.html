@@ -6,6 +6,7 @@
 	{% from "_formhelpers.html" import render_field %}
 	<form action="{{ url_for("add_comment") }}" method=post>
 		<dl>
+			{{ comment.hidden_tag() }}
 			{{ render_field(comment.title) }}
 			{{ render_field(comment.text) }}
 			{{ render_field(comment.post_id) }}
