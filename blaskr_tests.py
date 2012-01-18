@@ -160,7 +160,6 @@ class MyTest(unittest.TestCase):
 
     def test_edit_count(self):
         pass
-    #make sure to put the csrf in
 
 if __name__ == "__main__":
     unittest.main()

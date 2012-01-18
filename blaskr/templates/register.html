@@ -3,10 +3,11 @@
   <h2>Registration</h2>
 	{% from "_formhelpers.html" import render_field %}
   <form action="{{ url_for('register') }}" method=post>
+			{{ form.hidden_tag() }}
 			{{ render_field(form.email) }}
 			{{ render_field(form.password) }}
 			{{ render_field(form.confirm) }}
-			{{ form.recaptcha }}
+			{{ render_field(form.recaptcha) }}
   <dd><input type=submit value=Register>
   </form>
 {% endblock %}
