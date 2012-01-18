@@ -3,5 +3,5 @@
 	<p> comment on:
 	{% from "_posthelpers.html" import render_post %}
 	{{ render_post(post) }}
-	<strong>{{ comment.title }} by {{ comment.owner_string }}<br>{{ comment.text }}</strong>
+	<strong>{{ comment.title }} by {{ comment.owner_string() }}<br>{{ comment.text }}</strong>
 {% endblock %}

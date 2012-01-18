@@ -15,7 +15,6 @@ def login():
     if request.method == "POST" and form.validate():
         user = User.query.first()
         login_user(user)
-        app.logger.debug(current_user)
         flash("You were logged in")
         return redirect(url_for("show_entries"))
     return render_template("login.html", form=form)
@@ -23,7 +22,6 @@ def login():
 @app.route("/logout")
 @login_required
 def logout():
-    app.logger.debug("waaaaaah logout, %s", current_user)
     logout_user()
     flash("You were logged out")
     return redirect(url_for("show_entries"))
@@ -74,7 +72,11 @@ def show_post(post_id):
             flash("Successfully deleted post")
             return redirect(url_for("show_entries"))
         #needs an edit post template
-    return render_template("show_post.html", post=post, comment=CommentForm(postid=post_id), comments=post.comments.all())
+
+    comment = CommentForm(post_id=post_id)
+    if current_user.is_authenticated():
+        del comment.recaptcha
+    return render_template("show_post.html", post=post, comment=comment, comments=post.comments.all())
 
 @app.route("/post/edit/<int:post_id>")
 @login_required
@@ -97,6 +99,8 @@ def add_post():
 @app.route("/comment/add", methods=["POST"])
 def add_comment():
     form = CommentForm(request.form)
+    if current_user.is_authenticated():
+        del form.recaptcha
     if request.method == "POST" and form.validate() and Post.query.get_or_403(form.post_id.data):
         db.session.add(Comment(form.title.data, form.text.data, form.post_id.data, session.get("user_id")))
         db.session.commit()
@@ -109,6 +113,8 @@ def comment(comment_id):
     comment = Comment.query.get_or_404(comment_id)
     form = CommentForm(request.form)
     post = Post.query.get(comment.post_id)
+    if current_user.is_authenticated():
+        del form.recaptcha
     if request.method == "POST":
         if not current_user.is_authenticated():
             return login_manager.unauthorized()

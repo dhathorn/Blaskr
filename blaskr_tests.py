@@ -112,11 +112,13 @@ class MyTest(unittest.TestCase):
 
         self.logout()
 
-        rv = self.app.post("/comment/add", data=dict(title="test", text="anon", post_id=1), follow_redirects=True)
+        rv = self.app.post("/comment/add", data=dict(title="test", text="anon", post_id=1, recaptcha_challenge_field='test',
+                                                                 recaptcha_response_field= 'test'), follow_redirects=True)
         assert "Successfully added" in rv.data
         rv = self.app.get("/comment/1", follow_redirects=True)
         assert "anon" in rv.data
-        rv = self.app.post("/comment/add", data=dict(title="test", text="anon", post_id=2), follow_redirects=True)
+        rv = self.app.post("/comment/add", data=dict(title="test", text="anon", post_id=2, recaptcha_challenge_field='test',
+                                                                 recaptcha_response_field= 'test'), follow_redirects=True)
         assert rv.status_code == 403
         rv = self.app.post("/comment/1", data=dict(title="edited", text="anon", post_id=1), follow_redirects=True)
         assert (rv.status_code == 401) or ("Please log in" in rv.data)
@@ -134,7 +136,8 @@ class MyTest(unittest.TestCase):
 
         self.logout()
 
-        rv = self.app.post("/comment/add", data=dict(title="test", text="magic", post_id=1), follow_redirects=True)
+        rv = self.app.post("/comment/add", data=dict(title="test", text="anon", post_id=1, recaptcha_challenge_field='test',
+                                                                 recaptcha_response_field= 'test'), follow_redirects=True)
         assert "by Anonymous" in rv.data
         
     def test_authorization(self):

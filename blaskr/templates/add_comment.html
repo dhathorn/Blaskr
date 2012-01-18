@@ -9,7 +9,7 @@
 			{{ comment.hidden_tag() }}
 			{{ render_field(comment.title) }}
 			{{ render_field(comment.text) }}
-			{{ render_field(comment.post_id) }}
+			{{ comment.recaptcha }}
 			<dd><input type=submit value=Comment></dd>
 		</dl>
 	</form>

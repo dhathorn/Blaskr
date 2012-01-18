@@ -9,7 +9,10 @@
 			{{ comment.hidden_tag() }}
 			{{ render_field(comment.title) }}
 			{{ render_field(comment.text) }}
-			{{ comment.post_id|safe }}
+			{% if not current_user.is_authenticated() %}
+				{{ comment.recaptcha }}
+			{% endif %}
+
 			<dd><input type=submit value=Comment></dd>
 		</dl>
 	</form>
