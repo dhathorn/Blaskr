@@ -23,7 +23,7 @@ class MyTest(unittest.TestCase):
 
     def change_role(self, user_id, role):
         user = User.query.get(user_id)
-        user.role = role
+        user.role = user.role_number(role)
         db.session.commit()
 
     def login(self, un, pw):
