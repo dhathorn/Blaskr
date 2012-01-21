@@ -69,7 +69,7 @@ class MyTest(unittest.TestCase):
 
         self.register("eggs@yahoo.com", "spammmmm", "spammmmm")
         self.login("eggs@yahoo.com", "spammmmm")
-        self.change_role(1, "User")
+        self.change_role(1, "Member")
 
         rv = self.app.post("/post/add", data=dict(title="test", text="magic baked in right here"), follow_redirects=True)
         assert "New entry was successfully posted" in rv.data
@@ -128,7 +128,7 @@ class MyTest(unittest.TestCase):
     def test_post_comment_owner(self):
         self.register("eggs@yahoo.com", "spammmmm", "spammmmm")
         self.login("eggs@yahoo.com", "spammmmm")
-        self.change_role(1, "User")
+        self.change_role(1, "Member")
         rv = self.app.post("/post/add", data=dict(title="test", text="magic baked in right here"), follow_redirects=True)
         assert "by eggs@yahoo.com" in rv.data
         rv = self.app.post("/comment/add", data=dict(title="test", text="magic", post_id=1), follow_redirects=True)
@@ -143,7 +143,7 @@ class MyTest(unittest.TestCase):
     def test_authorization(self):
         self.register("eggs@yahoo.com", "spammmmm", "spammmmm")
         self.login("eggs@yahoo.com", "spammmmm")
-        self.change_role(1, "User")
+        self.change_role(1, "Member")
         rv = self.app.post("/post/add", data=dict(title="post", text="to test comments"), follow_redirects=True)
         rv = self.app.post("/comment/add", data=dict(title="new", text="comment", post_id=1), follow_redirects=True)
         self.logout()
@@ -156,7 +156,15 @@ class MyTest(unittest.TestCase):
         assert (rv.status_code == 401) or ("Not authorized" in rv.data)
 
     def test_captcha(self):
-        pass
+        self.register("eggs@yahoo.com", "spammmmm", "spammmmm")
+        self.login("eggs@yahoo.com", "spammmmm")
+        self.change_role(1, "Member")
+        rv = self.app.post("/post/add", data=dict(title="post", text="to test comments"), follow_redirects=True)
+        self.logout()
+        blaskr.app.config['TESTING'] = False
+        rv = self.app.post("/comment/add", data=dict(title="new", text="comment", post_id=1, recaptcha_challenge_field='test',
+                                                        recaptcha_response_field='test'), follow_redirects=True)
+        assert "Invalid word" in rv.data
 
     def test_pagination(self):
         pass

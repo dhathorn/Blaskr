@@ -10,7 +10,7 @@
 			{{ render_field(comment.title) }}
 			{{ render_field(comment.text) }}
 			{% if not current_user.is_authenticated() %}
-				{{ comment.recaptcha }}
+				{{ render_field(comment.recaptcha) }}
 			{% endif %}
 
 			<dd><input type=submit value=Comment></dd>
