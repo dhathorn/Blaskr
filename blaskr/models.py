@@ -1,8 +1,9 @@
 from datetime import datetime
 from werkzeug import generate_password_hash, check_password_hash
-from blaskr import db
 from flaskext.login import UserMixin
+from flaskext.sqlalchemy import SQLAlchemy
 from flask import session
+db = SQLAlchemy()
 
 #helper function
 def role_number(role):

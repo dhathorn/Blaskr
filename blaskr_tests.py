@@ -11,6 +11,7 @@ class MyTest(unittest.TestCase):
         blaskr.app.config['TESTING'] = True
         blaskr.app.config['DEBUG'] = False
         blaskr.app.config['CSRF_ENABLED'] = False
+        blaskr.app.test_request_context().push()
         blaskr.db.create_all()
         self.app = blaskr.app.test_client()
 

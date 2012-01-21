@@ -8,7 +8,6 @@ from forms import *
 from flaskext.login import current_user, login_user, login_required, logout_user
 
 #views
-
 @app.route("/login", methods=["GET", "POST"])
 def login():
     form = LoginForm(request.form)
@@ -51,7 +50,6 @@ def edit():
 
 @app.route("/")
 def show_entries():
-    app.logger.debug("am i logged in ? %s", current_user)
     entries = Post.query.order_by(Post.id.desc()).all()
     return render_template("show_entries.html", entries=entries, form=PostForm())
 
