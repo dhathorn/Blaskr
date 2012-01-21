@@ -144,7 +144,7 @@ class MyTest(unittest.TestCase):
         self.register("eggs@yahoo.com", "spammmmm", "spammmmm")
         self.login("eggs@yahoo.com", "spammmmm")
         self.change_role(1, "Member")
-        rv = self.app.post("/post/add", data=dict(title="post", text="to test comments"), follow_redirects=True)
+        rv = self.app.post("/members/post/add", data=dict(title="post", text="to test comments"), follow_redirects=True)
         rv = self.app.post("/comment/add", data=dict(title="new", text="comment", post_id=1), follow_redirects=True)
         self.logout()
         self.register("more_eggs@yahoo.com", "spammmmm", "spammmmm")

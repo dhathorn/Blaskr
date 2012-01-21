@@ -1,4 +1,5 @@
-from flask import Blueprint, render_template, url_for, flash, abort
+from flask import Blueprint, render_template, url_for, flash, abort, request,\
+                    redirect
 from flaskext.login import current_user, login_required
 from models import Post, User, Comment, db
 from forms import *
@@ -9,7 +10,7 @@ members = Blueprint('members', __name__)
 @login_required
 def member_auth():
     if not current_user.is_authorized("Member"):
-        abort(403) #FIXME make this more user friendly
+        abort(401) #FIXME make this more user friendly
 
 @members.route("/")
 def show_entries():
