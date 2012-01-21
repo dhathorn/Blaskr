@@ -2,7 +2,6 @@
 import blaskr
 import unittest
 from flask import Flask
-from blaskr import init_db
 from blaskr.models import *
 
 class MyTest(unittest.TestCase):
