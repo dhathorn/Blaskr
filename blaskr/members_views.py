@@ -3,13 +3,12 @@ from flask import Blueprint, render_template, url_for, flash, abort, request,\
 from flaskext.login import current_user, login_required
 from models import Post, User, Comment, db
 from forms import *
+from helpers import populate_titletext
 
 members = Blueprint('members', __name__)
 
-def not_authorzied():
+def not_authorized():
     abort(401) #FIXME make this more user friendly
-
-
 
 @members.before_request
 @login_required

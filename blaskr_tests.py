@@ -63,11 +63,11 @@ class MyTest(unittest.TestCase):
         rv = self.app.post("/members/post/1", data=dict(title="editing", text="this"), follow_redirects=True)
         assert (rv.status_code == 401) or ("Please log in" in rv.data)
         rv = self.app.post("members/post/1", data=dict(method="DELETE"), follow_redirects=True)
-        assert rv.status_code == 404
+        assert (rv.status_code == 401) or ("Please log in" in rv.data)
 
         self.register("eggs@yahoo.com", "spammmmm", "spammmmm")
-        self.login("eggs@yahoo.com", "spammmmm")
         self.change_role(1, "Member")
+        self.login("eggs@yahoo.com", "spammmmm")
 
         rv = self.app.post("members/post/add", data=dict(title="test", text="magic baked in right here"), follow_redirects=True)
         assert "New entry was successfully posted" in rv.data
@@ -92,6 +92,7 @@ class MyTest(unittest.TestCase):
 
     def test_comment(self):
         self.register("eggs@yahoo.com", "spammmmm", "spammmmm")
+        self.change_role(1, "Member")
         self.login("eggs@yahoo.com", "spammmmm")
         rv = self.app.post("members/post/add", data=dict(title="post", text="to test comments"), follow_redirects=True)
 
@@ -140,8 +141,8 @@ class MyTest(unittest.TestCase):
         
     def test_authorization(self):
         self.register("eggs@yahoo.com", "spammmmm", "spammmmm")
-        self.login("eggs@yahoo.com", "spammmmm")
         self.change_role(1, "Member")
+        self.login("eggs@yahoo.com", "spammmmm")
         rv = self.app.post("/members/post/add", data=dict(title="post", text="to test comments"), follow_redirects=True)
         rv = self.app.post("/comment/add", data=dict(title="new", text="comment", post_id=1), follow_redirects=True)
         self.logout()
