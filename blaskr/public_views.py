@@ -75,7 +75,7 @@ def add_comment():
         db.session.commit()
         flash("Successfully added comment! Woot!")
         return redirect(url_for("public.show_post", post_id=form.post_id.data))
-    return render_template("show_post.html", post=Post.query.filter(Post.id == form.post_id.data).first(), comment=form)
+    return render_template("show_post.html", post=Post.query.get(form.post_id.data), comment=form)
 
 @public.route("/comment/<int:comment_id>", methods=["GET", "POST"])
 def comment(comment_id):
