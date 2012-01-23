@@ -6,24 +6,29 @@ from forms import *
 
 members = Blueprint('members', __name__)
 
+def not_authorzied():
+    abort(401) #FIXME make this more user friendly
+
+
+
 @members.before_request
 @login_required
 def member_auth():
     if not current_user.is_authorized("Member"):
-        abort(401) #FIXME make this more user friendly
+        return not_authorized()
 
 @members.route("/")
-def show_entries():
+def index():
     entries = Post.query.order_by(Post.id.desc()).all()
     return render_template("show_entries.html", entries=entries, form=PostForm())
 
 @members.route("/post/<int:post_id>", methods=["GET", "POST"])
-def show_post(post_id):
+def post(post_id):
     post = Post.query.get_or_404(post_id)
     form = PostForm(request.form)
     if request.method == "POST":
-        if not current_user.is_authenticated():
-            return login_manager.unauthorized()
+        if not post.owner(current_user):
+            return not_authorized()
         if form.validate():
             populate_titletext(form, post)
             db.session.commit()
@@ -39,11 +44,6 @@ def show_post(post_id):
     if current_user.is_authenticated():
         del comment.recaptcha
     return render_template("show_post.html", post=post, comment=comment, comments=post.comments.all())
-
-@members.route("/post/edit/<int:post_id>")
-def edit_post(post_id):
-    post = Post.query.get_or_404(post_id)
-    raise notimplimentederror()
 
 @members.route("/post/add", methods=["GET", "POST"])
 def add_post():
