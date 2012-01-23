@@ -86,7 +86,7 @@ def comment(comment_id):
     if current_user.is_authenticated():
         del form.recaptcha
     if request.method == "POST":
-        if not current_user.is_authenticated():
+        if not (current_user.is_authenticated() and comment.owner(current_user)):
             return login_manager.unauthorized()
         if form.validate():
             populate_titletext(form, comment)

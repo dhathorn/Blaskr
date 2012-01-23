@@ -164,9 +164,9 @@ class MyTest(unittest.TestCase):
         assert (rv.status_code == 401) or ("Not authorized" in rv.data)
 
         rv = self.app.post("/comment/1", data=dict(title="edited", text="anon", post_id=1), follow_redirects=True)
-        assert (rv.status_code == 401) or ("Not authorized" in rv.data)
+        assert (rv.status_code == 401) or ("Not authorized" in rv.data) or ("Please log in" in rv.data)
         rv = self.app.post("/comment/1", data=dict(method="DELETE"), follow_redirects=True)
-        assert (rv.status_code == 401) or ("Not authorized" in rv.data)
+        assert (rv.status_code == 401) or ("Not authorized" in rv.data) or ("Please log in" in rv.data)
 
     def test_captcha(self):
         self.register("eggs@yahoo.com", "spammmmm", "spammmmm")
