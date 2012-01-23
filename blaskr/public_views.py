@@ -15,7 +15,7 @@ public = Blueprint('public', __name__)
 def login():
     form = LoginForm(request.form)
     if request.method == "POST" and form.validate():
-        user = User.query.first()
+        user = User.query.filter(User.email == form.email.data).first()
         login_user(user)
         flash("You were logged in")
         return redirect(url_for("show_entries"))

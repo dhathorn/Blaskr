@@ -58,11 +58,13 @@ class MyTest(unittest.TestCase):
 
     def test_login_logout(self):
         self.register("eggs@yahoo.com", "spammmmm", "spammmmm")
-        rv = self.app.post("/login", data=dict(email="eggs@yahoo.com", password="spammmmm"), follow_redirects=True)
-
-        assert "logged in" in rv.data
+        self.register("more@yahoo.com", "spammmmm", "spammmmm")
+        rv = self.login("eggs@yahoo.com", "spammmmm")
+        assert "logged in" in rv.data and "eggs@yahoo.com" in rv.data
         rv = self.logout()
         assert "logged out" in rv.data
+        rv = self.login("more@yahoo.com", "spammmmm")
+        assert "logged in" in rv.data and "more@yahoo.com" in rv.data
 
     def test_post(self):
         rv = self.app.get("/post/1")
