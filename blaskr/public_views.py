@@ -10,7 +10,7 @@ from flaskext.login import current_user, login_user, login_required, logout_user
 
 public = Blueprint('public', __name__)
 
-#views
+#user views
 @public.route("/login", methods=["GET", "POST"])
 def login():
     form = LoginForm(request.form)
@@ -38,12 +38,10 @@ def register():
         return redirect(url_for("login"))
     return render_template("register.html", form=form)
 
-@public.route("/edit", methods=["GET", "POST"])
-def edit():
-    user = User.query.filter(User.email == session["email"]).first()
-    if not user:
-        return redirect(url_for("login"))
-
+@public.route("/user/edit", methods=["GET", "POST"])
+@login_required
+def edit_user():
+    user = current_user
     form = RegistrationForm(request.form, user)
     if request.method == "POST" and form.validate():
         form.populate_obj(user)
@@ -51,8 +49,9 @@ def edit():
         flash("Modification Successful")
     return render_template("edit.html", form=form)
 
+#public post views
 @public.route("/")
-def show_entries():
+def index():
     entries = Post.query.order_by(Post.id.desc()).all()
     return render_template("show_entries.html", entries=entries)
 
