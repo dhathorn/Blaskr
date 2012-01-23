@@ -1,8 +1,9 @@
 #!/usr/bin/python
 import blaskr
 import unittest
-from flask import Flask, url_for
+from flask import Flask, url_for, session
 from blaskr.models import *
+from flaskext.login import current_user
 
 class MyTest(unittest.TestCase):
     def setUp(self):
@@ -35,7 +36,7 @@ class MyTest(unittest.TestCase):
         rv = self.app.get('/')
         assert "No entries here so far" in rv.data
 
-    def test_login_logout(self):
+    def test_registration(self):
         rv = self.app.get("/register")
         assert rv.status_code == 200
         rv = self.register("eggs@yahoo.com", "spammmmm", "cam")
@@ -51,6 +52,14 @@ class MyTest(unittest.TestCase):
         rv = self.login("eggs@yahoo.com", "spam")
         assert "That password does not match the one we have on record" in rv.data
         rv = self.login("eggs@yahoo.com", "spammmmm")
+        assert "logged in" in rv.data
+        rv = self.logout()
+        assert "logged out" in rv.data
+
+    def test_login_logout(self):
+        self.register("eggs@yahoo.com", "spammmmm", "spammmmm")
+        rv = self.app.post("/login", data=dict(email="eggs@yahoo.com", password="spammmmm"), follow_redirects=True)
+
         assert "logged in" in rv.data
         rv = self.logout()
         assert "logged out" in rv.data
@@ -145,7 +154,7 @@ class MyTest(unittest.TestCase):
         self.login("eggs@yahoo.com", "spammmmm")
         rv = self.app.post("/members/post/add", data=dict(title="post", text="to test comments"), follow_redirects=True)
         rv = self.app.post("/comment/add", data=dict(title="new", text="comment", post_id=1), follow_redirects=True)
-        self.logout()
+        rv = self.logout()
         self.register("more_eggs@yahoo.com", "spammmmm", "spammmmm")
         self.login("more_eggs@yahoo.com", "spammmmm")
         self.change_role(2, "Member")

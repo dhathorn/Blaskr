@@ -27,7 +27,7 @@ def post(post_id):
     form = PostForm(request.form)
     if request.method == "POST":
         if not post.owner(current_user):
-            return not_authorized()
+            not_authorized()
         if form.validate():
             populate_titletext(form, post)
             db.session.commit()
