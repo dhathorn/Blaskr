@@ -3,7 +3,6 @@
 from flask import Flask
 from flaskext.sqlalchemy import SQLAlchemy
 from login_manager import login_manager
-
 from models import db
 from members_views import members
 from public_views import public

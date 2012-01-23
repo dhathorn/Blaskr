@@ -148,6 +148,9 @@ class MyTest(unittest.TestCase):
         self.logout()
         self.register("more_eggs@yahoo.com", "spammmmm", "spammmmm")
         self.login("more_eggs@yahoo.com", "spammmmm")
+        self.change_role(2, "Member")
+        rv = self.app.post(url_for("members.post", post_id=1), data=dict(title="editing", text="someone elses post!"), follow_redirects=True)
+        assert (rv.status_code == 401) or ("Not authorized" in rv.data)
 
         rv = self.app.post("/comment/1", data=dict(title="edited", text="anon", post_id=1), follow_redirects=True)
         assert (rv.status_code == 401) or ("Not authorized" in rv.data)
