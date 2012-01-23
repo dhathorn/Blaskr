@@ -148,7 +148,6 @@ class MyTest(unittest.TestCase):
 
         rv = self.app.post("/comment/add", data=dict(title="test", text="anon", post_id=1, recaptcha_challenge_field='test',
                                                                  recaptcha_response_field= 'test'), follow_redirects=True)
-        print rv.data
         assert "by Anonymous" in rv.data
         
     def test_authorization(self):
