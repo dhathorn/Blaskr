@@ -62,7 +62,7 @@ def show_post(post_id):
     comment = CommentForm(post_id=post_id)
     if current_user.is_authenticated():
         del comment.recaptcha
-    return render_template("show_post.html", post=post, comment=comment, comments=post.comments.all())
+    return render_template("show_post.html", post=post, comment=comment)
 
 #comments
 @public.route("/comment/add", methods=["POST"])
