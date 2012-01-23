@@ -1,14 +1,17 @@
 import monkey_patch
 from helpers import populate_titletext
-from blaskr import app, db, login_manager
+from blaskr.models import db
 from flask import Flask, request, session, g, redirect, url_for, \
-             abort, render_template, flash, current_app
+             abort, render_template, flash, Blueprint
 from models import *
 from forms import *
+from login_manager import login_manager
 from flaskext.login import current_user, login_user, login_required, logout_user
 
+public = Blueprint('public', __name__)
+
 #views
-@app.route("/login", methods=["GET", "POST"])
+@public.route("/login", methods=["GET", "POST"])
 def login():
     form = LoginForm(request.form)
     if request.method == "POST" and form.validate():
@@ -18,14 +21,14 @@ def login():
         return redirect(url_for("show_entries"))
     return render_template("login.html", form=form)
 
-@app.route("/logout")
+@public.route("/logout")
 @login_required
 def logout():
     logout_user()
     flash("You were logged out")
     return redirect(url_for("show_entries"))
 
-@app.route("/register", methods=["GET", "POST"])
+@public.route("/register", methods=["GET", "POST"])
 def register():
     form = RegistrationForm(request.form)
     if request.method == "POST" and form.validate():
@@ -35,7 +38,7 @@ def register():
         return redirect(url_for("login"))
     return render_template("register.html", form=form)
 
-@app.route("/edit", methods=["GET", "POST"])
+@public.route("/edit", methods=["GET", "POST"])
 def edit():
     user = User.query.filter(User.email == session["email"]).first()
     if not user:
@@ -48,12 +51,12 @@ def edit():
         flash("Modification Successful")
     return render_template("edit.html", form=form)
 
-@app.route("/")
+@public.route("/")
 def show_entries():
     entries = Post.query.order_by(Post.id.desc()).all()
     return render_template("show_entries.html", entries=entries)
 
-@app.route("/post/<int:post_id>")
+@public.route("/post/<int:post_id>")
 def show_post(post_id):
     post = Post.query.get_or_404(post_id)
     form = PostForm(request.form)
@@ -63,7 +66,7 @@ def show_post(post_id):
     return render_template("show_post.html", post=post, comment=comment, comments=post.comments.all())
 
 #comments
-@app.route("/comment/add", methods=["POST"])
+@public.route("/comment/add", methods=["POST"])
 def add_comment():
     form = CommentForm(request.form)
     if current_user.is_authenticated():
@@ -75,7 +78,7 @@ def add_comment():
         return redirect(url_for("show_post", post_id=form.post_id.data))
     return render_template("show_post.html", post=Post.query.filter(Post.id == form.post_id.data).first(), comment=form)
 
-@app.route("/comment/<int:comment_id>", methods=["GET", "POST"])
+@public.route("/comment/<int:comment_id>", methods=["GET", "POST"])
 def comment(comment_id):
     comment = Comment.query.get_or_404(comment_id)
     form = CommentForm(request.form)
@@ -98,7 +101,3 @@ def comment(comment_id):
         #needs an edit comment form
     return render_template("show_comment.html", post=Post.query.get(comment.post_id), comment=comment)
 
-#login
-@login_manager.user_loader
-def load_user(userid):
-    return User.query.get(userid)
