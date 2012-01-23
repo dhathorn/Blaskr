@@ -1,7 +1,7 @@
 #!/usr/bin/python
 import blaskr
 import unittest
-from flask import Flask
+from flask import Flask, url_for
 from blaskr.models import *
 
 class MyTest(unittest.TestCase):
@@ -20,7 +20,6 @@ class MyTest(unittest.TestCase):
     def register(self, un, pw, conf):
         return self.app.post("/register", data=dict(email=un, password=pw, confirm=conf, recaptcha_challenge_field='test',
                                                                                recaptcha_response_field= 'test'), follow_redirects=True)
-
     def change_role(self, user_id, role):
         user = User.query.get(user_id)
         user.role = user.role_number(role)
@@ -28,7 +27,6 @@ class MyTest(unittest.TestCase):
 
     def login(self, un, pw):
         return self.app.post("/login", data=dict(email=un, password=pw), follow_redirects=True)
-
 
     def logout(self):
         return self.app.get("/logout", follow_redirects=True)
@@ -60,42 +58,42 @@ class MyTest(unittest.TestCase):
     def test_post(self):
         rv = self.app.get("/post/1")
         assert rv.status_code == 404
-        rv = self.app.post("/post/add", data=dict(title="test", text="test"), follow_redirects=True)
+        rv = self.app.post(url_for("members.add_post"), data=dict(title="test", text="test"), follow_redirects=True)
         assert (rv.status_code == 401) or ("Please log in" in rv.data)
-        rv = self.app.post("/post/1", data=dict(title="editing", text="this"), follow_redirects=True)
-        assert rv.status_code == 404
-        rv = self.app.post("/post/1", data=dict(method="DELETE"), follow_redirects=True)
+        rv = self.app.post("/members/post/1", data=dict(title="editing", text="this"), follow_redirects=True)
+        assert (rv.status_code == 401) or ("Please log in" in rv.data)
+        rv = self.app.post("members/post/1", data=dict(method="DELETE"), follow_redirects=True)
         assert rv.status_code == 404
 
         self.register("eggs@yahoo.com", "spammmmm", "spammmmm")
         self.login("eggs@yahoo.com", "spammmmm")
         self.change_role(1, "Member")
 
-        rv = self.app.post("/post/add", data=dict(title="test", text="magic baked in right here"), follow_redirects=True)
+        rv = self.app.post("members/post/add", data=dict(title="test", text="magic baked in right here"), follow_redirects=True)
         assert "New entry was successfully posted" in rv.data
         rv = self.app.get("/post/1")
         assert "magic baked in right here" in rv.data
-        rv = self.app.post("/post/1", data=dict(title="test", text="no more magic!"), follow_redirects=True)
+        rv = self.app.post("members/post/1", data=dict(title="test", text="no more magic!"), follow_redirects=True)
         assert "Successfully edited post" in rv.data
         rv = self.app.get("/post/1")
         assert "no more magic" in rv.data
-        rv = self.app.post("/post/1", data=dict(method="DELETE"), follow_redirects=True)
+        rv = self.app.post("members/post/1", data=dict(method="DELETE"), follow_redirects=True)
         assert "Successfully deleted post" in rv.data
         rv = self.app.get("/post/1")
         assert rv.status_code == 404 
 
-        rv = self.app.post("/post/add", data=dict(title="test", text="magic baked in right here"), follow_redirects=True)
+        rv = self.app.post("members/post/add", data=dict(title="test", text="magic baked in right here"), follow_redirects=True)
         self.logout()
 
-        rv = self.app.post("/post/1", data=dict(title="editing", text="this"), follow_redirects=True)
+        rv = self.app.post("members/post/1", data=dict(title="editing", text="this"), follow_redirects=True)
         assert (rv.status_code == 401) or ("Please log in" in rv.data)
-        rv = self.app.post("/post/1", data=dict(method="DELETE"), follow_redirects=True)
+        rv = self.app.post("members/post/1", data=dict(method="DELETE"), follow_redirects=True)
         assert (rv.status_code == 401) or ("Please log in" in rv.data)
 
     def test_comment(self):
         self.register("eggs@yahoo.com", "spammmmm", "spammmmm")
         self.login("eggs@yahoo.com", "spammmmm")
-        rv = self.app.post("/post/add", data=dict(title="post", text="to test comments"), follow_redirects=True)
+        rv = self.app.post("members/post/add", data=dict(title="post", text="to test comments"), follow_redirects=True)
 
         rv = self.app.post("/comment/add", data=dict(title="test", text="magic", post_id=1), follow_redirects=True)
         assert "Successfully added" in rv.data
@@ -129,7 +127,7 @@ class MyTest(unittest.TestCase):
         self.register("eggs@yahoo.com", "spammmmm", "spammmmm")
         self.login("eggs@yahoo.com", "spammmmm")
         self.change_role(1, "Member")
-        rv = self.app.post("/post/add", data=dict(title="test", text="magic baked in right here"), follow_redirects=True)
+        rv = self.app.post("members/post/add", data=dict(title="test", text="magic baked in right here"), follow_redirects=True)
         assert "by eggs@yahoo.com" in rv.data
         rv = self.app.post("/comment/add", data=dict(title="test", text="magic", post_id=1), follow_redirects=True)
         assert "by eggs@yahoo.com" in rv.data
@@ -159,7 +157,7 @@ class MyTest(unittest.TestCase):
         self.register("eggs@yahoo.com", "spammmmm", "spammmmm")
         self.login("eggs@yahoo.com", "spammmmm")
         self.change_role(1, "Member")
-        rv = self.app.post("/post/add", data=dict(title="post", text="to test comments"), follow_redirects=True)
+        rv = self.app.post("members/post/add", data=dict(title="post", text="to test comments"), follow_redirects=True)
         self.logout()
         blaskr.app.config['TESTING'] = False
         rv = self.app.post("/comment/add", data=dict(title="new", text="comment", post_id=1, recaptcha_challenge_field='test',
