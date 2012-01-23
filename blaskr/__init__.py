@@ -18,4 +18,5 @@ db.init_app(app)
 login_manager.setup_app(app)
 
 
-import blaskr.views
+import blaskr.public_views
+import blaskr.members_views

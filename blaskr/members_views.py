@@ -41,7 +41,7 @@ def post(post_id):
             db.session.delete(post)
             db.session.commit()
             flash("Successfully deleted post")
-            return redirect(url_for("show_entries"))
+            return redirect(url_for("members.index"))
         #needs an edit post template
 
     comment = CommentForm(post_id=post_id)
@@ -56,5 +56,5 @@ def add_post():
         db.session.add(Post(form.title.data, form.text.data, session["user_id"]))
         db.session.commit()
         flash("New entry was successfully posted")
-        return redirect(url_for("show_entries"))
+        return redirect(url_for("members.index"))
     return render_template("add_post.html", form=form)

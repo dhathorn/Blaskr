@@ -1,7 +1,7 @@
 {% extends "layout.html" %}
 {% block body %}
 	{% from "_formhelpers.html" import render_field %}
-	<form action="{{ url_for('add_post') }}" method=post>
+	<form action="{{ url_for('members.add_post') }}" method=post>
 		<dl>
 			{{ form.hidden_tag() }}
 			{{ render_field(form.title) }}

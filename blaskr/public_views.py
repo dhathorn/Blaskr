@@ -18,7 +18,7 @@ def login():
         user = User.query.filter(User.email == form.email.data).first()
         login_user(user)
         flash("You were logged in")
-        return redirect(url_for("show_entries"))
+        return redirect(url_for("public.index"))
     return render_template("login.html", form=form)
 
 @public.route("/logout")
@@ -26,7 +26,7 @@ def login():
 def logout():
     logout_user()
     flash("You were logged out")
-    return redirect(url_for("show_entries"))
+    return redirect(url_for("public.index"))
 
 @public.route("/register", methods=["GET", "POST"])
 def register():
@@ -35,7 +35,7 @@ def register():
         db.session.add(User(form.email.data, form.password.data))
         db.session.commit()
         flash("Account created")
-        return redirect(url_for("login"))
+        return redirect(url_for("public.login"))
     return render_template("register.html", form=form)
 
 @public.route("/user/edit", methods=["GET", "POST"])
@@ -74,7 +74,7 @@ def add_comment():
         db.session.add(Comment(form.title.data, form.text.data, form.post_id.data, session.get("user_id")))
         db.session.commit()
         flash("Successfully added comment! Woot!")
-        return redirect(url_for("show_post", post_id=form.post_id.data))
+        return redirect(url_for("public.show_post", post_id=form.post_id.data))
     return render_template("show_post.html", post=Post.query.filter(Post.id == form.post_id.data).first(), comment=form)
 
 @public.route("/comment/<int:comment_id>", methods=["GET", "POST"])
@@ -91,12 +91,12 @@ def comment(comment_id):
             populate_titletext(form, comment)
             db.session.commit()
             flash("Successfully edited comment")
-            return redirect(url_for("show_post", post_id = comment.post_id))
+            return redirect(url_for("members.post", post_id = comment.post_id))
         elif form.method.data == "DELETE":
             db.session.delete(comment)
             db.session.commit()
             flash("Successfully deleted comment")
-            return redirect(url_for("show_post", post_id=post.id))
+            return redirect(url_for("members.post", post_id=post.id))
         #needs an edit comment template
     return render_template("show_comment.html", post=Post.query.get(comment.post_id), comment=comment)
 
