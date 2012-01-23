@@ -55,7 +55,7 @@ def index():
     entries = Post.query.order_by(Post.id.desc()).all()
     return render_template("show_entries.html", entries=entries)
 
-@public.route("/post/<int:post_id>")
+@public.route("/posts/<int:post_id>")
 def show_post(post_id):
     post = Post.query.get_or_404(post_id)
     form = PostForm(request.form)
@@ -97,6 +97,6 @@ def comment(comment_id):
             db.session.commit()
             flash("Successfully deleted comment")
             return redirect(url_for("show_post", post_id=post.id))
-        #needs an edit comment form
+        #needs an edit comment template
     return render_template("show_comment.html", post=Post.query.get(comment.post_id), comment=comment)
 

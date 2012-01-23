@@ -21,7 +21,12 @@ def index():
     entries = Post.query.order_by(Post.id.desc()).all()
     return render_template("show_entries.html", entries=entries, form=PostForm())
 
-@members.route("/post/<int:post_id>", methods=["GET", "POST"])
+@members.route("/posts")
+def posts_index():
+    entries = Post.query.order_by(Post.id.desc()).all()
+    return render_template("show_entries.html", entries=entries, form=PostForm())
+
+@members.route("/posts/<int:post_id>", methods=["GET", "POST"])
 def post(post_id):
     post = Post.query.get_or_404(post_id)
     form = PostForm(request.form)
@@ -44,7 +49,7 @@ def post(post_id):
         del comment.recaptcha
     return render_template("show_post.html", post=post, comment=comment, comments=post.comments.all())
 
-@members.route("/post/add", methods=["GET", "POST"])
+@members.route("/posts/add", methods=["GET", "POST"])
 def add_post():
     form = PostForm(request.form)
     if request.method == "POST" and form.validate():
