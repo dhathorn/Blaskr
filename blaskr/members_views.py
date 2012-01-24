@@ -57,4 +57,4 @@ def add_post():
         db.session.commit()
         flash("New entry was successfully posted")
         return redirect(url_for("members.index"))
-    return render_template("add_post.html", form=form)
+    return render_template("members/add_post.html", form=form)

@@ -19,7 +19,7 @@ def login():
         login_user(user)
         flash("You were logged in")
         return redirect(url_for("public.index"))
-    return render_template("login.html", form=form)
+    return render_template("public/login.html", form=form)
 
 @public.route("/logout")
 @login_required
@@ -36,7 +36,7 @@ def register():
         db.session.commit()
         flash("Account created")
         return redirect(url_for("public.login"))
-    return render_template("register.html", form=form)
+    return render_template("public/register.html", form=form)
 
 @public.route("/user/edit", methods=["GET", "POST"])
 @login_required
@@ -47,7 +47,7 @@ def edit_user():
         form.populate_obj(user)
         db.session.commit()
         flash("Modification Successful")
-    return render_template("edit.html", form=form)
+    return render_template("public/edit.html", form=form)
 
 #public post views
 @public.route("/")
@@ -98,5 +98,5 @@ def comment(comment_id):
             flash("Successfully deleted comment")
             return redirect(url_for("members.post", post_id=post.id))
         #needs an edit comment template
-    return render_template("show_comment.html", post=Post.query.get(comment.post_id), comment=comment)
+    return render_template("public/show_comment.html", post=Post.query.get(comment.post_id), comment=comment)
 
