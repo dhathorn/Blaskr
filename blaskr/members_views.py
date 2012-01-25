@@ -19,12 +19,12 @@ def member_auth():
 @members.route("/")
 def index():
     entries = Post.query.order_by(Post.id.desc()).all()
-    return render_template("show_entries.html", entries=entries, form=PostForm())
+    return render_template("members/show_entries.html", entries=entries, form=PostForm())
 
 @members.route("/posts")
 def posts_index():
     entries = Post.query.order_by(Post.id.desc()).all()
-    return render_template("show_entries.html", entries=entries, form=PostForm())
+    return render_template("members/show_entries.html", entries=entries, form=PostForm())
 
 @members.route("/posts/<int:post_id>", methods=["GET", "POST"])
 def post(post_id):
