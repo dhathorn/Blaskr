@@ -71,9 +71,9 @@ class MyTest(unittest.TestCase):
         assert rv.status_code == 404
         rv = self.app.post(url_for("members.add_post"), data=dict(title="test", text="test"), follow_redirects=True)
         assert (rv.status_code == 401) or ("Please log in" in rv.data)
-        rv = self.app.post("/members/posts/1", data=dict(title="editing", text="this"), follow_redirects=True)
+        rv = self.app.post( url_for('members.edit_post', post_id = 1), data=dict(title="editing", text="this"), follow_redirects=True)
         assert (rv.status_code == 401) or ("Please log in" in rv.data)
-        rv = self.app.post("members/posts/1", data=dict(method="DELETE"), follow_redirects=True)
+        rv = self.app.post( url_for('members.edit_post', post_id = 1), data=dict(title="editing", text="this", delete=True), follow_redirects=True)
         assert (rv.status_code == 401) or ("Please log in" in rv.data)
 
         self.register("eggs@yahoo.com", "spammmmm", "spammmmm")
@@ -84,11 +84,11 @@ class MyTest(unittest.TestCase):
         assert "New entry was successfully posted" in rv.data
         rv = self.app.get("/posts/1")
         assert "magic baked in right here" in rv.data
-        rv = self.app.post("members/posts/1", data=dict(title="test", text="no more magic!"), follow_redirects=True)
+        rv = self.app.post(url_for('members.edit_post', post_id = 1), data=dict(title="test", text="no more magic!"), follow_redirects=True)
         assert "Successfully edited post" in rv.data
         rv = self.app.get("/posts/1")
         assert "no more magic" in rv.data
-        rv = self.app.post("members/posts/1", data=dict(method="DELETE"), follow_redirects=True)
+        rv = self.app.post(url_for('members.edit_post', post_id = 1), data=dict(title="test", text="no more magic!", delete=True), follow_redirects=True)
         assert "Successfully deleted post" in rv.data
         rv = self.app.get("/posts/1")
         assert rv.status_code == 404 
@@ -160,7 +160,7 @@ class MyTest(unittest.TestCase):
         self.register("more_eggs@yahoo.com", "spammmmm", "spammmmm")
         self.login("more_eggs@yahoo.com", "spammmmm")
         self.change_role(2, "Member")
-        rv = self.app.post(url_for("members.post", post_id=1), data=dict(title="editing", text="someone elses post!"), follow_redirects=True)
+        rv = self.app.post(url_for("members.edit_post", post_id=1), data=dict(title="editing", text="someone elses post!"), follow_redirects=True)
         assert (rv.status_code == 401) or ("Not authorized" in rv.data)
 
         rv = self.app.post("/comment/1", data=dict(title="edited", text="anon", post_id=1), follow_redirects=True)
