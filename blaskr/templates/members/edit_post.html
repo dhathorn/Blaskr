@@ -1,0 +1,13 @@
+{% extends "layout.html" %}
+{% block body %}
+	{% from "_formhelpers.html" import render_field %}
+	<form action="{{ url_for('members.edit_post', post_id = post.post_id.data) }}" method=post>
+		<dl>
+			{{ post.hidden_tag() }}
+			{{ render_field(post.title) }}
+			{{ render_field(post.text) }}
+			{{ render_field(post.delete) }}
+			<dd><input type=submit value=Share>
+		</dl>
+	</form>
+{% endblock %}

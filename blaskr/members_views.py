@@ -29,25 +29,29 @@ def posts_index():
 @members.route("/posts/<int:post_id>", methods=["GET", "POST"])
 def post(post_id):
     post = Post.query.get_or_404(post_id)
-    form = PostForm(request.form)
+    comment = CommentForm(post_id=post_id)
+    return render_template("show_post.html", post=post, comment=comment)
+
+@members.route("/posts/edit/<int:post_id>", methods=["GET", "POST"])
+def edit_post(post_id):
+    post = Post.query.get_or_404(post_id)
+    form = PostForm(request.form, post, post_id=post_id)
     if request.method == "POST":
         if not post.owner(current_user):
             not_authorized()
         if form.validate():
-            populate_titletext(form, post)
-            db.session.commit()
-            flash("Successfully edited post")
-        elif form.method.data == "DELETE":
-            db.session.delete(post)
-            db.session.commit()
-            flash("Successfully deleted post")
-            return redirect(url_for("members.index"))
-        #needs an edit post template
+            if form.delete.data:
+                db.session.delete(post)
+                db.session.commit()
+                flash("Successfully deleted post")
+                return redirect(url_for("members.index"))
+            else:
+                populate_titletext(form, post)
+                db.session.commit()
+                flash("Successfully edited post")
+                return redirect(url_for("members.post", post_id=post_id))
+    return render_template("members/edit_post.html", post=form)
 
-    comment = CommentForm(post_id=post_id)
-    if current_user.is_authenticated():
-        del comment.recaptcha
-    return render_template("show_post.html", post=post, comment=comment, comments=post.comments.all())
 
 @members.route("/posts/add", methods=["GET", "POST"])
 def add_post():
