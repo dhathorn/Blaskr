@@ -1,0 +1,24 @@
+{% extends "layout.html" %}
+{% block body %}
+	{% from "_posthelpers.html" import render_post %}
+	{{ render_post(post) }}
+	<h3>Say your bit, leave a comment below</h3>
+	{% from "_formhelpers.html" import render_field %}
+	<form action="{{ url_for("public.add_comment") }}" method=post>
+		<dl>
+			{{ comment.hidden_tag() }}
+			{{ render_field(comment.title) }}
+			{{ render_field(comment.text) }}
+			{% if not current_user.is_authenticated() %}
+				{{ render_field(comment.recaptcha) }}
+			{% endif %}
+
+			<dd><input type=submit value=Comment></dd>
+		</dl>
+	</form>
+	{% from "_commenthelpers.html" import render_comment %}
+	{% for com in post.comments %}
+		{{ render_comment(com) }}
+	{% endfor %}
+		
+{% endblock %}

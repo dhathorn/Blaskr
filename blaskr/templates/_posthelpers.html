@@ -1,10 +1,6 @@
-{% macro render_post(post, current_user) %}
+{% macro render_post(post) %}
 		<h2>{{ post.title }}</h2> 
 		<p>by {{ post.owner_string() }} 
 		<p>{{ post.text }}<br>
-		<p><a href="{{ url_for('members.post', post_id=post.id) }}">Show Post</a>
-		{% if post.owner(current_user) %} 
-			| <a href="{{ url_for('members.edit_post', post_id=post.id) }}">Edit Post</a>
-		{% endif %}
 {% endmacro %}
 
