@@ -30,7 +30,7 @@ def posts_index():
 def post(post_id):
     post = Post.query.get_or_404(post_id)
     comment = CommentForm(post_id=post_id)
-    return render_template("show_post.html", post=post, comment=comment)
+    return render_template("members/show_post.html", post=post, comment=comment)
 
 @members.route("/posts/edit/<int:post_id>", methods=["GET", "POST"])
 def edit_post(post_id):
