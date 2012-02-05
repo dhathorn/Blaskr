@@ -107,15 +107,15 @@ class MyTest(unittest.TestCase):
         self.login("eggs@yahoo.com", "spammmmm")
         rv = self.app.post("members/posts/add", data=dict(title="post", text="to test comments"), follow_redirects=True)
 
-        rv = self.app.post(url_for('members.add_post'), data=dict(title="test", text="magic", post_id=1), follow_redirects=True)
+        rv = self.app.post(url_for('members.add_comment'), data=dict(title="test", text="magic", post_id=1), follow_redirects=True)
         assert "Successfully added" in rv.data
-        rv = self.app.post(url_for('members.add_post'), data=dict(title="test", text="magic", post_id=2), follow_redirects=True)
+        rv = self.app.post(url_for('members.add_comment'), data=dict(title="test", text="magic", post_id=2), follow_redirects=True)
         assert rv.status_code == 403
-        rv = self.app.post(url_for('members.add_post'), data=dict(title="test", text="magic"), follow_redirects=True)
+        rv = self.app.post(url_for('members.add_comment'), data=dict(title="test", text="magic"), follow_redirects=True)
         assert rv.status_code == 403
-        rv = self.app.post(url_for('members.edit_post', comment_id=1), data=dict(title="test", text="more magic"), follow_redirects=True)
+        rv = self.app.post(url_for('members.edit_comment', comment_id=1), data=dict(title="test", text="more magic"), follow_redirects=True)
         assert "Successfully edited" in rv.data
-        rv = self.app.post(url_for('members.edit_post', comment_id=1), data=dict(tile="test", text="more magic", delete=True), follow_redirects=True)
+        rv = self.app.post(url_for('members.edit_comment', comment_id=1), data=dict(tile="test", text="more magic", delete=True), follow_redirects=True)
         assert "Successfully deleted" in rv.data 
         rv = self.app.get("/comment/1")
         assert rv.status_code == 404

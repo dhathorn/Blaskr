@@ -62,4 +62,39 @@ def add_post():
         flash("New entry was successfully posted")
         return redirect(url_for("members.index"))
     return render_template("members/add_post.html", form=form)
+#comments
+@members.route("/comment/add", methods=["POST"])
+def add_comment():
+    form = CommentForm(request.form)
+    if current_user.is_authenticated():
+        del form.recaptcha
+    if request.method == "POST" and form.validate() and Post.query.get_or_403(form.post_id.data):
+        db.session.add(Comment(form.title.data, form.text.data, form.post_id.data, session.get("user_id")))
+        db.session.commit()
+        flash("Successfully added comment! Woot!")
+        return redirect(url_for("public.show_post", post_id=form.post_id.data))
+    return render_template("show_post.html", post=Post.query.get(form.post_id.data), comment=form)
+
+@members.route("/comment/<int:comment_id>", methods=["GET", "POST"])
+def comment(comment_id):
+    comment = Comment.query.get_or_404(comment_id)
+    form = CommentForm(request.form)
+    post = Post.query.get(comment.post_id)
+    if current_user.is_authenticated():
+        del form.recaptcha
+    if request.method == "POST":
+        if not (current_user.is_authenticated() and comment.owner(current_user)):
+            return login_manager.unauthorized()
+        if form.validate():
+            populate_titletext(form, comment)
+            db.session.commit()
+            flash("Successfully edited comment")
+            return redirect(url_for("members.post", post_id = comment.post_id))
+        elif form.method.data == "DELETE":
+            db.session.delete(comment)
+            db.session.commit()
+            flash("Successfully deleted comment")
+            return redirect(url_for("members.post", post_id=post.id))
+        #needs an edit comment template
+    return render_template("public/show_comment.html", post=Post.query.get(comment.post_id), comment=comment)
 
