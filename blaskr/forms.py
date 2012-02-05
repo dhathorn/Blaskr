@@ -57,4 +57,5 @@ class CommentForm(Form):
     text = TextAreaField("text")
     post_id = HiddenField("post_id")
     method = HiddenField("method")
+    delete = BooleanField("delete comment")
     recaptcha = RecaptchaField()

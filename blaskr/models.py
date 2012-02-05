@@ -56,7 +56,7 @@ class User(db.Model, UserMixin):
     password = db.Column(db.String())
     activate = db.Column(db.Boolean)
     created = db.Column(db.DateTime)
-    role = db.Column(db.Integer) #0 is admin, 10 is user, 20 is commentator
+    role = db.Column(db.Integer) #1 is admin, 10 is user, 20 is commentator
     roles = {"Admin" : 1, "Member" : 10, "Commenter" : 20}
 
     def owner(self, user):

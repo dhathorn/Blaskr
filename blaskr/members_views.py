@@ -62,3 +62,4 @@ def add_post():
         flash("New entry was successfully posted")
         return redirect(url_for("members.index"))
     return render_template("members/add_post.html", form=form)
+
