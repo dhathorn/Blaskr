@@ -91,12 +91,12 @@ def edit_comment(comment_id):
             populate_titletext(form, comment)
             db.session.commit()
             flash("Successfully edited comment")
-            return redirect(url_for("members.post", post_id = comment.post_id))
+            return redirect(url_for("public.post", post_id = comment.post_id))
         elif form.method.data == "DELETE":
             db.session.delete(comment)
             db.session.commit()
             flash("Successfully deleted comment")
-            return redirect(url_for("members.post", post_id=post.id))
+            return redirect(url_for("public.post", post_id=post.id))
         return render_template('edit_comment.html', comment = form)
     return render_template("show_comment.html", post=post, comment=comment)
 
