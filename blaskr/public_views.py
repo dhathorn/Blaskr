@@ -56,7 +56,7 @@ def index():
     return render_template("show_entries.html", entries=entries)
 
 @public.route("/posts/<int:post_id>")
-def show_post(post_id):
+def post(post_id):
     post = Post.query.get_or_404(post_id)
     form = PostForm(request.form)
     comment = CommentForm(post_id=post_id)
@@ -74,7 +74,7 @@ def add_comment():
         db.session.add(Comment(form.title.data, form.text.data, form.post_id.data, session.get("user_id")))
         db.session.commit()
         flash("Successfully added comment! Woot!")
-        return redirect(url_for("public.show_post", post_id=form.post_id.data))
+        return redirect(url_for("public.post", post_id=form.post_id.data))
     return render_template("show_post.html", post=Post.query.get(form.post_id.data), comment=form)
 
 @public.route("/comments/<int:comment_id>", methods=["GET", "POST"])

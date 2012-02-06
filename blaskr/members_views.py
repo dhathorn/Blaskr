@@ -66,7 +66,6 @@ def add_post():
 @members.route("/comments/add", methods=["POST"])
 def add_comment():
     form = CommentForm(request.form)
-   # if current_user.is_authenticated():
     del form.recaptcha
     if request.method == "POST" and form.validate() and Post.query.get_or_403(form.post_id.data):
         db.session.add(Comment(form.title.data, form.text.data, form.post_id.data, session.get("user_id")))
