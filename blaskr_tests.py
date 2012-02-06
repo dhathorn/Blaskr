@@ -130,9 +130,9 @@ class MyTest(unittest.TestCase):
         rv = self.app.post("/comments/add", data=dict(title="test", text="anon", post_id=2, recaptcha_challenge_field='test',
                                                                  recaptcha_response_field= 'test'), follow_redirects=True)
         assert rv.status_code == 403
-        rv = self.app.post("/comments/1", data=dict(title="edited", text="anon", post_id=1), follow_redirects=True)
+        rv = self.app.post(url_for('public.edit_comment', comment_id=1), data=dict(title="edited", text="anon", post_id=1), follow_redirects=True)
         assert (rv.status_code == 401) or ("Please log in" in rv.data)
-        rv = self.app.post("/comments/1", data=dict(method="DELETE"), follow_redirects=True)
+        rv = self.app.post(url_for('public.edit_comment', comment_id=1), data=dict(method="DELETE"), follow_redirects=True)
         assert (rv.status_code == 401) or ("Please log in" in rv.data)
 
     def test_post_comment_owner(self):

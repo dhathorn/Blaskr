@@ -74,12 +74,11 @@ def add_comment():
         return redirect(url_for("members.post", post_id=form.post_id.data))
     return render_template("show_post.html", post=Post.query.get(form.post_id.data), comment=form)
 
-@members.route("/comments/<int:comment_id>", methods=["GET", "POST"])
+@members.route("/comments/edit/<int:comment_id>", methods=["GET", "POST"])
 def edit_comment(comment_id):
     comment = Comment.query.get_or_404(comment_id)
     form = CommentForm(request.form, comment, comment_id = comment_id)
     post = Post.query.get(comment.post_id)
-#    if current_user.is_authenticated():
     del form.recaptcha
     if request.method == "POST":
         if not comment.owner(current_user):
@@ -95,10 +94,10 @@ def edit_comment(comment_id):
                 db.session.commit()
                 flash("Successfully edited comment")
                 return redirect(url_for("members.post", post_id = post.id ))
-        return render_template('members/edit_comment.html', comment = form)
+        return render_template('edit_comment.html', comment = form)
     return render_template("show_comment.html", post=Post.query.get(comment.post_id), comment=comment)
 
-@members.route('/comments/edit/<int:comment_id>', methods=["GET", "POST"])
+@members.route('/comments/<int:comment_id>', methods=["GET", "POST"])
 def comment(comment_id):
     comment = Comment.query.get_or_404(comment_id)
-    return render_template('members/show_comment.html', post=Post.query.get(comment.post_id), comment=comment)
+    return render_template('show_comment.html', post=Post.query.get(comment.post_id), comment=comment)

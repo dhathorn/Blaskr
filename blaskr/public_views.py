@@ -78,7 +78,7 @@ def add_comment():
     return render_template("show_post.html", post=Post.query.get(form.post_id.data), comment=form)
 
 @public.route("/comments/<int:comment_id>", methods=["GET", "POST"])
-def comment(comment_id):
+def edit_comment(comment_id):
     comment = Comment.query.get_or_404(comment_id)
     form = CommentForm(request.form)
     post = Post.query.get(comment.post_id)
@@ -97,6 +97,10 @@ def comment(comment_id):
             db.session.commit()
             flash("Successfully deleted comment")
             return redirect(url_for("members.post", post_id=post.id))
-        #needs an edit comment template
+        return render_template('edit_comment.html', comment = form)
     return render_template("show_comment.html", post=post, comment=comment)
 
+@public.route('/comments/<int:comment_id>', methods=["GET", "POST"])
+def comment(comment_id):
+    comment = Comment.query.get_or_404(comment_id)
+    return render_template('show_comment.html', post=Post.query.get(comment.post_id), comment=comment)
