@@ -117,14 +117,13 @@ class MyTest(unittest.TestCase):
         assert "Successfully edited" in rv.data
         rv = self.app.post(url_for('members.edit_comment', comment_id=1), data=dict(title="test", text="more magic", delete=True), follow_redirects=True)
         assert "Successfully deleted" in rv.data 
-        rv = self.app.get("/comment/1")
+        rv = self.app.get("/comments/1")
         assert rv.status_code == 404
 
         self.logout()
 
         rv = self.app.post("/comments/add", data=dict(title="test", text="anon", post_id=1, recaptcha_challenge_field='test',
                                                                  recaptcha_response_field= 'test'), follow_redirects=True)
-        print rv.data
         assert "Successfully added" in rv.data
         rv = self.app.get("/comments/1", follow_redirects=True)
         assert "anon" in rv.data
@@ -142,12 +141,12 @@ class MyTest(unittest.TestCase):
         self.change_role(1, "Member")
         rv = self.app.post("members/posts/add", data=dict(title="test", text="magic baked in right here"), follow_redirects=True)
         assert "by eggs@yahoo.com" in rv.data
-        rv = self.app.post("/comment/add", data=dict(title="test", text="magic", post_id=1), follow_redirects=True)
+        rv = self.app.post("/comments/add", data=dict(title="test", text="magic", post_id=1), follow_redirects=True)
         assert "by eggs@yahoo.com" in rv.data
 
         self.logout()
 
-        rv = self.app.post("/comment/add", data=dict(title="test", text="anon", post_id=1, recaptcha_challenge_field='test',
+        rv = self.app.post("/comments/add", data=dict(title="test", text="anon", post_id=1, recaptcha_challenge_field='test',
                                                                  recaptcha_response_field= 'test'), follow_redirects=True)
         assert "by Anonymous" in rv.data
         
@@ -156,7 +155,7 @@ class MyTest(unittest.TestCase):
         self.change_role(1, "Member")
         self.login("eggs@yahoo.com", "spammmmm")
         rv = self.app.post("/members/posts/add", data=dict(title="post", text="to test comments"), follow_redirects=True)
-        rv = self.app.post("/comment/add", data=dict(title="new", text="comment", post_id=1), follow_redirects=True)
+        rv = self.app.post("/comments/add", data=dict(title="new", text="comment", post_id=1), follow_redirects=True)
         rv = self.logout()
         self.register("more_eggs@yahoo.com", "spammmmm", "spammmmm")
         self.login("more_eggs@yahoo.com", "spammmmm")
@@ -164,9 +163,9 @@ class MyTest(unittest.TestCase):
         rv = self.app.post(url_for("members.edit_post", post_id=1), data=dict(title="editing", text="someone elses post!"), follow_redirects=True)
         assert (rv.status_code == 401) or ("Not authorized" in rv.data)
 
-        rv = self.app.post("/comment/1", data=dict(title="edited", text="anon", post_id=1), follow_redirects=True)
+        rv = self.app.post("/comments/1", data=dict(title="edited", text="anon", post_id=1), follow_redirects=True)
         assert (rv.status_code == 401) or ("Not authorized" in rv.data) or ("Please log in" in rv.data)
-        rv = self.app.post("/comment/1", data=dict(method="DELETE"), follow_redirects=True)
+        rv = self.app.post("/comments/1", data=dict(method="DELETE"), follow_redirects=True)
         assert (rv.status_code == 401) or ("Not authorized" in rv.data) or ("Please log in" in rv.data)
 
     def test_captcha(self):
@@ -176,7 +175,7 @@ class MyTest(unittest.TestCase):
         rv = self.app.post("members/posts/add", data=dict(title="post", text="to test comments"), follow_redirects=True)
         self.logout()
         blaskr.app.config['TESTING'] = False
-        rv = self.app.post("/comment/add", data=dict(title="new", text="comment", post_id=1, recaptcha_challenge_field='test',
+        rv = self.app.post("/comments/add", data=dict(title="new", text="comment", post_id=1, recaptcha_challenge_field='test',
                                                         recaptcha_response_field='test'), follow_redirects=True)
         assert "Invalid word" in rv.data
 
