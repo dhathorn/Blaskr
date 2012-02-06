@@ -115,24 +115,25 @@ class MyTest(unittest.TestCase):
         assert rv.status_code == 403
         rv = self.app.post(url_for('members.edit_comment', comment_id=1), data=dict(title="test", text="more magic"), follow_redirects=True)
         assert "Successfully edited" in rv.data
-        rv = self.app.post(url_for('members.edit_comment', comment_id=1), data=dict(tile="test", text="more magic", delete=True), follow_redirects=True)
+        rv = self.app.post(url_for('members.edit_comment', comment_id=1), data=dict(title="test", text="more magic", delete=True), follow_redirects=True)
         assert "Successfully deleted" in rv.data 
         rv = self.app.get("/comment/1")
         assert rv.status_code == 404
 
         self.logout()
 
-        rv = self.app.post("/comment/add", data=dict(title="test", text="anon", post_id=1, recaptcha_challenge_field='test',
+        rv = self.app.post("/comments/add", data=dict(title="test", text="anon", post_id=1, recaptcha_challenge_field='test',
                                                                  recaptcha_response_field= 'test'), follow_redirects=True)
+        print rv.data
         assert "Successfully added" in rv.data
-        rv = self.app.get("/comment/1", follow_redirects=True)
+        rv = self.app.get("/comments/1", follow_redirects=True)
         assert "anon" in rv.data
-        rv = self.app.post("/comment/add", data=dict(title="test", text="anon", post_id=2, recaptcha_challenge_field='test',
+        rv = self.app.post("/comments/add", data=dict(title="test", text="anon", post_id=2, recaptcha_challenge_field='test',
                                                                  recaptcha_response_field= 'test'), follow_redirects=True)
         assert rv.status_code == 403
-        rv = self.app.post("/comment/1", data=dict(title="edited", text="anon", post_id=1), follow_redirects=True)
+        rv = self.app.post("/comments/1", data=dict(title="edited", text="anon", post_id=1), follow_redirects=True)
         assert (rv.status_code == 401) or ("Please log in" in rv.data)
-        rv = self.app.post("/comment/1", data=dict(method="DELETE"), follow_redirects=True)
+        rv = self.app.post("/comments/1", data=dict(method="DELETE"), follow_redirects=True)
         assert (rv.status_code == 401) or ("Please log in" in rv.data)
 
     def test_post_comment_owner(self):

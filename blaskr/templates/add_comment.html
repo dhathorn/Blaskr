@@ -1,0 +1,17 @@
+{% extends "layout.html" %}
+{% block body %}
+{% from "_posthelpers.html" import render_post %}
+{{ render_post(post) }}
+	<h3>Say your bit, leave a comment below</h3>
+	{% from "_formhelpers.html" import render_field %}
+	<form action="{{ url_for("members.add_comment") }}" method=post>
+		<!---FIXME-->
+		<dl>
+			{{ comment.hidden_tag() }}
+			{{ render_field(comment.title) }}
+			{{ render_field(comment.text) }}
+			{{ comment.recaptcha }}
+			<dd><input type=submit value=Comment></dd>
+		</dl>
+	</form>
+{% endblock %}

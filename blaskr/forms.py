@@ -56,6 +56,6 @@ class CommentForm(Form):
     title = TextField("title", [validators.Required()])
     text = TextAreaField("text")
     post_id = HiddenField("post_id")
-    method = HiddenField("method")
+    comment_id = HiddenField("comment_id")
     delete = BooleanField("delete comment")
     recaptcha = RecaptchaField()
