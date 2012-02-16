@@ -40,13 +40,23 @@ class PostForm(Form):
     post_id = HiddenField("post id")
 
 class RegistrationForm(Form):
-    email = TextField("email", [validators.Length(min=6, max=35), validators.Email(message="Not a valid email address"), Unique(User, User.email)])
-    password = PasswordField("password", [
+    email = TextField("email", [validators.Email(message="Not a valid email address")])
+    username = TextField("username", [validators.Length(min=6), Unique(User, User.username)])
+    password = PasswordField("Password", [
         validators.Required(),
-        validators.EqualTo("confirm", message="Passwords must match")
+        validators.EqualTo("Confirm", message="Passwords must match")
     ])
     confirm = PasswordField("Repeat Password")
     recaptcha = RecaptchaField()
+
+class EditUserForm(Form):
+    email = TextField("email", [validators.Length(min=6, max=35), validators.Email(message="Not a valid email address"), Unique(User, User.email)])
+    password = PasswordField("New password", [
+        validators.Required(),
+        validators.EqualTo("confirm", message="Passwords must match")
+    ])
+    confirm = PasswordField("Confirm new password")
+
 
 class LoginForm(Form):
     email = TextField("email", [validators.Required(), Exists(User, User.email, message="We do not recognize that email address")])

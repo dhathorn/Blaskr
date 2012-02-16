@@ -53,6 +53,7 @@ class Comment(db.Model):
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(80), unique=True)
+    username = db.Column(db.String(80))
     password = db.Column(db.String())
     activate = db.Column(db.Boolean)
     created = db.Column(db.DateTime)
